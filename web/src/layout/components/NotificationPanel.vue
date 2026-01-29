@@ -50,6 +50,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import NotificationList from './NotificationList.vue'
 
 interface Notification {
   id: string
@@ -208,7 +209,7 @@ onMounted(() => {
   
   :deep(.el-tabs__item) {
     padding: 0 $spacing-md;
-    font-size: $font-size-sm;
+    font-size: $font-size-small;
     height: 40px;
     line-height: 40px;
     

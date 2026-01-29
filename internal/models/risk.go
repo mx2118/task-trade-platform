@@ -176,20 +176,22 @@ func (n *Notification) IsUnread() bool {
     return n.IsRead == 0
 }
 
-// IsRead 通知是否已读
-func (n *Notification) IsRead() bool {
+// IsReadStatus 通知是否已读
+func (n *Notification) IsReadStatus() bool {
     return n.IsRead == 1
 }
 
 // MarkAsRead 标记为已读
 func (n *Notification) MarkAsRead() {
-    n.IsRead = 1
+    readValue := int8(1)
+    n.IsRead = readValue
     n.UpdatedAt = time.Now()
 }
 
 // MarkAsUnread 标记为未读
 func (n *Notification) MarkAsUnread() {
-    n.IsRead = 0
+    readValue := int8(0)
+    n.IsRead = readValue
     n.UpdatedAt = time.Now()
 }
 

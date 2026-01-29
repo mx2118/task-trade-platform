@@ -67,14 +67,14 @@ const closeSidebar = () => {
   flex: 1;
   display: flex;
   position: relative;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .layout-content {
   flex: 1;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  overflow: visible;
   transition: margin-left 0.3s ease;
   margin-left: $sidebar-width;
   

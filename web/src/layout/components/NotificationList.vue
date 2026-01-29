@@ -275,9 +275,11 @@ const handleAction = (command: string, notification: Notification) => {
     .notification-title {
       font-weight: $font-weight-primary;
       color: $text-primary;
-      font-size: $font-size-sm;
+      font-size: $font-size-small;
       flex: 1;
-      @extend .text-ellipsis;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
     
     .notification-time {
@@ -289,7 +291,7 @@ const handleAction = (command: string, notification: Notification) => {
     
     .notification-text {
       color: $text-regular;
-      font-size: $font-size-sm;
+      font-size: $font-size-small;
       line-height: 1.4;
       margin-bottom: $spacing-sm;
       display: -webkit-box;

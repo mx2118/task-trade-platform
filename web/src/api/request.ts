@@ -68,7 +68,7 @@ service.interceptors.response.use(
     
     // 请求成功
     if (data.code === 200) {
-      return data
+      return response
     }
     
     // 业务错误处理
@@ -104,7 +104,7 @@ const handleBusinessError = (data: ApiResponse, config: RequestConfig) => {
     case 401:
       // 未授权，跳转到登录页
       const userStore = useUserStore()
-      userStore.logout()
+      userStore.logoutAction()
       router.push(`/login?redirect=${router.currentRoute.value.fullPath}`)
       break
     case 403:
@@ -191,7 +191,7 @@ const handleHttpError = (response: AxiosResponse, config: RequestConfig) => {
   // 401错误特殊处理
   if (status === 401) {
     const userStore = useUserStore()
-    userStore.logout()
+    userStore.logoutAction()
     router.push(`/login?redirect=${router.currentRoute.value.fullPath}`)
   }
 }

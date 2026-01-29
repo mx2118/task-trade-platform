@@ -31,9 +31,26 @@ const globalLoading = computed(() => appStore.globalLoading)
 
 <style lang="scss">
 .app-container {
-  height: 100vh;
+  min-height: 100vh;
   width: 100vw;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+// 页面切换动画
+.fade-transform-enter-active,
+.fade-transform-leave-active {
+  transition: all 0.2s;
+}
+
+.fade-transform-enter-from {
+  opacity: 0;
+  transform: translateX(-20px);
+}
+
+.fade-transform-leave-to {
+  opacity: 0;
+  transform: translateX(20px);
 }
 
 // 全局加载样式

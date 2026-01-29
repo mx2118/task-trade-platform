@@ -7,25 +7,25 @@ import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 
 export default defineConfig({
   plugins: [
-    vue(),
-    // 自动导入Vue相关函数，如：ref, reactive, toRef 等
+    vue({
+      script: {
+        defineModel: true,
+        propsDestructure: true
+      }
+    }),
+    // 自动导入Vue相关函数
     AutoImport({
       resolvers: [ElementPlusResolver()],
-      imports: [
-        'vue',
-        'vue-router',
-        'pinia',
-        '@vueuse/core'
-      ],
-      dts: true,
+      imports: ['vue', 'vue-router', 'pinia'],
+      dts: false,
       eslintrc: {
-        enabled: true
+        enabled: false
       }
     }),
     // 自动导入组件
     Components({
       resolvers: [ElementPlusResolver()],
-      dts: true
+      dts: false
     })
   ],
   resolve: {
@@ -45,49 +45,81 @@ export default defineConfig({
   css: {
     preprocessorOptions: {
       scss: {
-        additionalData: `@import "@/styles/variables.scss";`
+        additionalData: `@import "@/styles/variables.scss";`,
+        api: 'modern-compiler' // 使用现代编译器
       }
-    }
+    },
+    devSourcemap: false
   },
   server: {
     host: '0.0.0.0',
     port: 3000,
-    open: true,
+    open: false,
     cors: true,
+    // 开发服务器预热常用文件
+    warmup: {
+      clientFiles: [
+        './src/main.ts',
+        './src/App.vue',
+        './src/router/index.ts'
+      ]
+    },
+    hmr: {
+      overlay: false
+    },
     proxy: {
       '/api': {
         target: 'http://localhost:8080',
         changeOrigin: true,
         secure: false,
-        ws: true
+        ws: true,
+        rewrite: (path) => path
       }
     }
   },
+  optimizeDeps: {
+    include: [
+      'vue',
+      'vue-router',
+      'pinia',
+      'element-plus',
+      '@element-plus/icons-vue',
+      'axios'
+    ]
+  },
   build: {
-    target: 'es2015',
+    target: 'es2020',
     outDir: 'dist',
     assetsDir: 'assets',
     sourcemap: false,
-    minify: 'terser',
-    terserOptions: {
-      compress: {
-        drop_console: true,
-        drop_debugger: true
-      }
-    },
+    minify: 'esbuild',
+    cssCodeSplit: true,
+    chunkSizeWarningLimit: 1000,
     rollupOptions: {
       output: {
         chunkFileNames: 'js/[name]-[hash].js',
         entryFileNames: 'js/[name]-[hash].js',
         assetFileNames: '[ext]/[name]-[hash].[ext]',
-        manualChunks: {
-          'element-plus': ['element-plus'],
-          'vue-vendor': ['vue', 'vue-router', 'pinia'],
-          'utils': ['axios', 'dayjs', 'lodash-es']
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            if (id.includes('element-plus')) {
+              return 'element-plus'
+            }
+            if (id.includes('@element-plus/icons-vue')) {
+              return 'element-icons'
+            }
+            if (id.includes('vue') || id.includes('pinia')) {
+              return 'vue-vendor'
+            }
+            return 'vendor'
+          }
         }
       }
     },
-    chunkSizeWarningLimit: 1000
+    modulePreload: {
+      polyfill: false
+    },
+    reportCompressedSize: false
   },
   define: {
     __VUE_I18N_FULL_INSTALL__: true,

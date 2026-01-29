@@ -11,6 +11,7 @@ export const taskApi = {
   getTasks(params?: {
     keyword?: string
     category_id?: number
+    status?: string
     min_price?: number
     max_price?: number
     sort?: string
@@ -160,16 +161,21 @@ export const taskApi = {
   /**
    * 获取任务统计
    */
-  getTaskStats(): Promise<ApiResponse<{
+  getTaskStats(params?: {
+    category_id?: number
+  }): Promise<ApiResponse<{
     total: number
     pending: number
     in_progress: number
     completed: number
     cancelled: number
+    completed_today: number
+    active_users: number
   }>> {
     return request({
       url: '/tasks/stats',
-      method: 'GET'
+      method: 'GET',
+      params
     })
   },
 

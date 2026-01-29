@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>API测试</title>
+    <meta charset="UTF-8">
+</head>
+<body>
+    <h1>前端API测试</h1>
+    <div id="result"></div>
+    
+    <script>
+        async function testAPI() {
+            const resultDiv = document.getElementById('result');
+            
+            try {
+                // 测试任务列表API
+                resultDiv.innerHTML += '<h2>测试 /api/tasks</h2>';
+                const response = await fetch('/api/tasks');
+                const data = await response.json();
+                
+                resultDiv.innerHTML += '<p>状态码: ' + response.status + '</p>';
+                resultDiv.innerHTML += '<p>返回数据: ' + JSON.stringify(data, null, 2) + '</p>';
+                resultDiv.innerHTML += '<p>任务数量: ' + (data.data?.tasks?.length || 0) + '</p>';
+                
+                if (data.data?.tasks?.length > 0) {
+                    resultDiv.innerHTML += '<h3>第一个任务:</h3>';
+                    resultDiv.innerHTML += '<pre>' + JSON.stringify(data.data.tasks[0], null, 2) + '</pre>';
+                }
+                
+            } catch (error) {
+                resultDiv.innerHTML += '<p style="color: red;">错误: ' + error.message + '</p>';
+            }
+        }
+        
+        testAPI();
+    </script>
+</body>
+</html>

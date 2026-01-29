@@ -462,7 +462,7 @@ func main() {
         <div class="card">
             <h1>🚀 任务交易平台</h1>
             <div class="status">✅ 系统运行正常</div>
-            <p>服务器IP: <strong>121.41.39.105</strong></p>
+            <p>服务器IP: <strong>49.234.39.189</strong></p>
             <p>部署时间: <strong>%s</strong></p>
             <p>运行状态: <strong>在线服务中</strong></p>
         </div>
@@ -471,7 +471,7 @@ func main() {
             <div class="feature">
                 <h3>🔧 系统管理</h3>
                 <p>宝塔面板管理</p>
-                <a href="https://121.41.39.105:21452/f97c6b7e" class="button" target="_blank">访问面板</a>
+                <a href="https://49.234.39.189:21452/f97c6b7e" class="button" target="_blank">访问面板</a>
             </div>
             
             <div class="feature">
@@ -496,7 +496,7 @@ func main() {
         <div class="card">
             <h3>🎉 部署成功！</h3>
             <p>任务交易平台已成功部署到公网服务器</p>
-            <p>用户现在可以访问 <strong>http://121.41.39.105</strong> 使用完整的任务交易功能</p>
+            <p>用户现在可以访问 <strong>http://49.234.39.189</strong> 使用完整的任务交易功能</p>
             <p><strong>开始您的在线任务交易业务吧！</strong></p>
         </div>
     </div>
@@ -505,9 +505,9 @@ func main() {
 	})
 
 	fmt.Println("🚀 任务交易平台启动中...")
-	fmt.Printf("📡 服务器地址: http://121.41.39.105:8080\n")
-	fmt.Printf("🔧 API接口: http://121.41.39.105:8080/api/\n")
-	fmt.Printf("💚 健康检查: http://121.41.39.105:8080/health\n")
+	fmt.Printf("📡 服务器地址: http://49.234.39.189:8080\n")
+	fmt.Printf("🔧 API接口: http://49.234.39.189:8080/api/\n")
+	fmt.Printf("💚 健康检查: http://49.234.39.189:8080/health\n")
 	fmt.Println("=====================================")
 	
 	log.Fatal(http.ListenAndServe(":8080", nil))

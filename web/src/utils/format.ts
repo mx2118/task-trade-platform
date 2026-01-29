@@ -2,500 +2,365 @@
  * 格式化工具函数
  */
 
-/**
- * 格式化金额
- * @param amount 金额
- * @param decimals 小数位数
- * @param separator 千分位分隔符
- * @returns 格式化后的金额字符串
- */
-export const formatMoney = (
-  amount: number | string,
-  decimals: number = 2,
-  separator: string = ','
-): string => {
-  if (amount === null || amount === undefined || amount === '') {
-    return '0.00'
-  }
+import dayjs from 'dayjs'
+import relativeTime from 'dayjs/plugin/relativeTime'
+import 'dayjs/locale/zh-cn'
 
-  const num = Number(amount)
-  if (isNaN(num)) {
-    return '0.00'
-  }
-
-  const fixed = num.toFixed(decimals)
-  const parts = fixed.split('.')
-  
-  // 格式化整数部分
-  parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, separator)
-  
-  return parts.join('.')
-}
+// 扩展dayjs
+dayjs.extend(relativeTime)
+dayjs.locale('zh-cn')
 
 /**
  * 格式化时间
- * @param time 时间字符串、时间戳或Date对象
- * @param format 格式化字符串
- * @returns 格式化后的时间字符串
  */
-export const formatTime = (
-  time: string | number | Date,
-  format: string = 'YYYY-MM-DD HH:mm:ss'
-): string => {
+export function formatTime(time: string | Date | null | undefined, format: string = 'YYYY-MM-DD HH:mm'): string {
   if (!time) return ''
-
-  let date: Date
   
-  if (typeof time === 'string') {
-    // 处理相对时间格式
-    if (time.includes('ago') || time.includes('前')) {
-      return time
-    }
-    date = new Date(time)
-  } else if (typeof time === 'number') {
-    // 判断是秒还是毫秒
-    date = time.toString().length === 10 ? new Date(time * 1000) : new Date(time)
-  } else {
-    date = time
-  }
-
-  if (isNaN(date.getTime())) {
-    return ''
-  }
-
-  const year = date.getFullYear()
-  const month = String(date.getMonth() + 1).padStart(2, '0')
-  const day = String(date.getDate()).padStart(2, '0')
-  const hours = String(date.getHours()).padStart(2, '0')
-  const minutes = String(date.getMinutes()).padStart(2, '0')
-  const seconds = String(date.getSeconds()).padStart(2, '0')
-
-  return format
-    .replace('YYYY', year.toString())
-    .replace('MM', month)
-    .replace('DD', day)
-    .replace('HH', hours)
-    .replace('mm', minutes)
-    .replace('ss', seconds)
+  const date = typeof time === 'string' ? dayjs(time) : dayjs(time)
+  return date.format(format)
 }
 
 /**
  * 格式化相对时间
- * @param time 时间字符串、时间戳或Date对象
- * @returns 相对时间字符串
  */
-export const formatRelativeTime = (
-  time: string | number | Date
-): string => {
+export function formatRelativeTime(time: string | Date | null | undefined): string {
   if (!time) return ''
+  
+  const date = typeof time === 'string' ? dayjs(time) : dayjs(time)
+  return date.fromNow()
+}
 
-  const now = new Date()
-  let date: Date
+/**
+ * 格式化金额
+ */
+export function formatAmount(amount: number | string, precision: number = 2): string {
+  const num = typeof amount === 'string' ? parseFloat(amount) : amount
+  if (isNaN(num)) return '¥0.00'
+  
+  return `¥${num.toFixed(precision)}`
+}
 
-  if (typeof time === 'string') {
-    date = new Date(time)
-  } else if (typeof time === 'number') {
-    date = time.toString().length === 10 ? new Date(time * 1000) : new Date(time)
-  } else {
-    date = time
-  }
-
-  if (isNaN(date.getTime())) {
-    return ''
-  }
-
-  const diff = now.getTime() - date.getTime()
-  const seconds = Math.floor(diff / 1000)
-  const minutes = Math.floor(seconds / 60)
-  const hours = Math.floor(minutes / 60)
-  const days = Math.floor(hours / 24)
-  const months = Math.floor(days / 30)
-  const years = Math.floor(months / 12)
-
-  if (seconds < 60) {
-    return '刚刚'
-  } else if (minutes < 60) {
-    return `${minutes}分钟前`
-  } else if (hours < 24) {
-    return `${hours}小时前`
-  } else if (days < 30) {
-    return `${days}天前`
-  } else if (months < 12) {
-    return `${months}个月前`
-  } else {
-    return `${years}年前`
-  }
+/**
+ * 格式化金额 (别名)
+ */
+export function formatMoney(amount: number | string, precision: number = 2): string {
+  return formatAmount(amount, precision)
 }
 
 /**
  * 格式化文件大小
- * @param bytes 字节数
- * @param decimals 小数位数
- * @returns 格式化后的文件大小字符串
  */
-export const formatFileSize = (
-  bytes: number,
-  decimals: number = 2
-): string => {
-  if (bytes === 0) return '0 Bytes'
-
+export function formatFileSize(bytes: number): string {
+  if (bytes === 0) return '0 B'
+  
   const k = 1024
-  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB']
+  const sizes = ['B', 'KB', 'MB', 'GB', 'TB']
   const i = Math.floor(Math.log(bytes) / Math.log(k))
-
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(decimals)) + ' ' + sizes[i]
+  
+  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`
 }
 
 /**
- * 格式化数字
- * @param num 数字
- * @param decimals 小数位数
- * @param separator 千分位分隔符
- * @returns 格式化后的数字字符串
+ * 格式化数字（千分位）
  */
-export const formatNumber = (
-  num: number,
-  decimals: number = 0,
-  separator: string = ','
-): string => {
-  if (isNaN(num)) return '0'
-
-  const fixed = num.toFixed(decimals)
-  const parts = fixed.split('.')
-  
-  // 格式化整数部分
-  parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, separator)
-  
-  return parts.join('.')
+export function formatNumber(num: number | string): string {
+  const n = typeof num === 'string' ? parseFloat(num) : num
+  return n.toLocaleString('zh-CN')
 }
 
 /**
  * 格式化百分比
- * @param value 数值
- * @param total 总数
- * @param decimals 小数位数
- * @returns 百分比字符串
  */
-export const formatPercentage = (
-  value: number,
-  total: number,
-  decimals: number = 1
-): string => {
-  if (total === 0) return '0%'
-
-  const percentage = (value / total) * 100
-  return `${percentage.toFixed(decimals)}%`
+export function formatPercentage(value: number, precision: number = 1): string {
+  return `${(value * 100).toFixed(precision)}%`
 }
 
 /**
- * 格式化手机号
- * @param phone 手机号
- * @returns 格式化后的手机号
+ * 格式化电话号码
  */
-export const formatPhone = (phone: string): string => {
-  if (!phone || phone.length !== 11) return phone
-
-  return phone.replace(/(\d{3})(\d{4})(\d{4})/, '$1****$3')
-}
-
-/**
- * 格式化身份证号
- * @param idCard 身份证号
- * @returns 格式化后的身份证号
- */
-export const formatIdCard = (idCard: string): string => {
-  if (!idCard || idCard.length !== 18) return idCard
-
-  return idCard.replace(/(\d{6})(\d{8})(\d{4})/, '$1********$3')
+export function formatPhone(phone: string): string {
+  if (!phone) return ''
+  
+  // 简单的手机号格式化（隐藏中间4位）
+  if (phone.length === 11) {
+    return `${phone.slice(0, 3)}****${phone.slice(7)}`
+  }
+  
+  return phone
 }
 
 /**
  * 格式化银行卡号
- * @param bankCard 银行卡号
- * @returns 格式化后的银行卡号
  */
-export const formatBankCard = (bankCard: string): string => {
-  if (!bankCard) return bankCard
+export function formatBankCard(cardNumber: string): string {
+  if (!cardNumber) return ''
+  
+  // 隐藏部分数字，只显示前后4位
+  if (cardNumber.length >= 8) {
+    return `${cardNumber.slice(0, 4)} **** **** ${cardNumber.slice(-4)}`
+  }
+  
+  return cardNumber
+}
 
-  const cleaned = bankCard.replace(/\s/g, '')
-  if (cleaned.length < 16) return bankCard
+/**
+ * 格式化身份证号
+ */
+export function formatIdCard(idCard: string): string {
+  if (!idCard) return ''
+  
+  // 隐藏中间部分，只显示前后6位
+  if (idCard.length >= 8) {
+    return `${idCard.slice(0, 6)}********${idCard.slice(-4)}`
+  }
+  
+  return idCard
+}
 
-  return cleaned.replace(/(\d{4})(?=\d)/g, '$1 ')
+/**
+ * 获取时间段描述
+ */
+export function getTimePeriod(hour: number): string {
+  if (hour >= 6 && hour < 12) return '上午'
+  if (hour >= 12 && hour < 18) return '下午'
+  if (hour >= 18 && hour < 24) return '晚上'
+  return '凌晨'
 }
 
 /**
  * 格式化地址
- * @param province 省
- * @param city 市
- * @param district 区县
- * @param detail 详细地址
- * @returns 完整地址
  */
-export const formatAddress = (
-  province?: string,
-  city?: string,
-  district?: string,
+export function formatAddress(address: {
+  province?: string
+  city?: string
+  district?: string
   detail?: string
-): string => {
-  const parts = [province, city, district, detail].filter(Boolean)
+}): string {
+  const parts = [
+    address.province,
+    address.city,
+    address.district,
+    address.detail
+  ].filter(Boolean)
+  
   return parts.join('')
 }
 
 /**
- * 格式化任务状态
- * @param status 状态码
- * @returns 状态文本
+ * 格式化URL（添加协议）
  */
-export const formatTaskStatus = (status: string): string => {
-  const statusMap: Record<string, string> = {
-    pending: '待接取',
-    pending_payment: '待支付',
-    in_progress: '进行中',
-    delivered: '已交付',
-    completed: '已完成',
-    cancelled: '已取消',
-    rejected: '已拒绝'
+export function formatUrl(url: string): string {
+  if (!url) return ''
+  
+  if (!/^https?:\/\//.test(url)) {
+    return `https://${url}`
   }
-
-  return statusMap[status] || '未知'
+  
+  return url
 }
 
 /**
- * 格式化支付状态
- * @param status 状态码
- * @returns 状态文本
+ * 截断文本
  */
-export const formatPaymentStatus = (status: string): string => {
-  const statusMap: Record<string, string> = {
-    pending: '待支付',
-    processing: '处理中',
-    success: '支付成功',
-    failed: '支付失败',
-    cancelled: '已取消',
-    refunded: '已退款'
+export function truncateText(text: string, maxLength: number = 50): string {
+  if (!text) return ''
+  
+  if (text.length <= maxLength) return text
+  
+  return `${text.slice(0, maxLength)}...`
+}
+
+/**
+ * 获取文件扩展名
+ */
+export function getFileExtension(filename: string): string {
+  if (!filename) return ''
+  
+  const parts = filename.split('.')
+  return parts.length > 1 ? parts[parts.length - 1].toLowerCase() : ''
+}
+
+/**
+ * 判断是否为图片文件
+ */
+export function isImageFile(filename: string): boolean {
+  const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp']
+  const extension = getFileExtension(filename)
+  return imageExtensions.includes(extension)
+}
+
+/**
+ * 获取文件类型图标
+ */
+export function getFileIcon(filename: string): string {
+  const extension = getFileExtension(filename)
+  
+  const iconMap: Record<string, string> = {
+    // 图片
+    jpg: 'Picture',
+    jpeg: 'Picture',
+    png: 'Picture',
+    gif: 'Picture',
+    webp: 'Picture',
+    bmp: 'Picture',
+    
+    // 文档
+    pdf: 'Document',
+    doc: 'Document',
+    docx: 'Document',
+    xls: 'Document',
+    xlsx: 'Document',
+    ppt: 'Document',
+    pptx: 'Document',
+    txt: 'Document',
+    
+    // 压缩文件
+    zip: 'FolderOpened',
+    rar: 'FolderOpened',
+    '7z': 'FolderOpened',
+    tar: 'FolderOpened',
+    
+    // 音频
+    mp3: 'Headphones',
+    wav: 'Headphones',
+    flac: 'Headphones',
+    
+    // 视频
+    mp4: 'VideoPlay',
+    avi: 'VideoPlay',
+    mov: 'VideoPlay',
+    wmv: 'VideoPlay',
+    
+    // 代码文件
+    js: 'Code',
+    ts: 'Code',
+    html: 'Code',
+    css: 'Code',
+    java: 'Code',
+    py: 'Code',
+    cpp: 'Code',
+    c: 'Code',
+    
+    // 其他
+    default: 'Document'
   }
-
-  return statusMap[status] || '未知'
+  
+  return iconMap[extension] || iconMap.default
 }
 
 /**
- * 格式化订单类型
- * @param type 类型码
- * @returns 类型文本
+ * 生成颜色（基于字符串）
  */
-export const formatOrderType = (type: string): string => {
-  const typeMap: Record<string, string> = {
-    task: '任务支付',
-    recharge: '账户充值',
-    withdrawal: '账户提现',
-    settlement: '任务结算',
-    refund: '退款'
+export function generateColorFromString(str: string): string {
+  if (!str) return '#667eea'
+  
+  let hash = 0
+  for (let i = 0; i < str.length; i++) {
+    hash = str.charCodeAt(i) + ((hash << 5) - hash)
   }
-
-  return typeMap[type] || '其他'
+  
+  const hue = hash % 360
+  return `hsl(${hue}, 70%, 50%)`
 }
 
 /**
- * 格式化交易类型
- * @param type 类型码
- * @returns 类型文本
+ * 验证手机号
  */
-export const formatTransactionType = (type: string): string => {
-  const typeMap: Record<string, string> = {
-    income: '收入',
-    expense: '支出',
-    freeze: '冻结',
-    unfreeze: '解冻',
-    refund: '退款'
+export function validatePhone(phone: string): boolean {
+  const phoneRegex = /^1[3-9]\d{9}$/
+  return phoneRegex.test(phone)
+}
+
+/**
+ * 验证邮箱
+ */
+export function validateEmail(email: string): boolean {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  return emailRegex.test(email)
+}
+
+/**
+ * 验证身份证号
+ */
+export function validateIdCard(idCard: string): boolean {
+  if (!idCard) return false
+  
+  // 简单验证：长度为15或18位
+  return /^\d{15}$|^\d{17}[\dXx]$/.test(idCard)
+}
+
+/**
+ * 获取随机字符串
+ */
+export function getRandomString(length: number = 8): string {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+  let result = ''
+  
+  for (let i = 0; i < length; i++) {
+    result += chars.charAt(Math.floor(Math.random() * chars.length))
   }
-
-  return typeMap[type] || '其他'
+  
+  return result
 }
 
 /**
- * 格式化星级评分
- * @param rating 评分
- * @param maxRating 最高评分
- * @returns 星级字符串
+ * 防抖函数
  */
-export const formatStarRating = (rating: number, maxRating: number = 5): string => {
-  const fullStars = Math.floor(rating)
-  const hasHalfStar = rating - fullStars >= 0.5
-  const emptyStars = maxRating - fullStars - (hasHalfStar ? 1 : 0)
-
-  return '★'.repeat(fullStars) + (hasHalfStar ? '☆' : '') + '☆'.repeat(emptyStars)
-}
-
-/**
- * 格式化标签列表
- * @param tags 标签数组
- * @param separator 分隔符
- * @returns 标签字符串
- */
-export const formatTags = (tags: string[], separator: string = ', '): string => {
-  if (!Array.isArray(tags) || tags.length === 0) {
-    return ''
-  }
-
-  return tags.filter(Boolean).join(separator)
-}
-
-/**
- * 格式化URL参数
- * @param params 参数对象
- * @returns URL参数字符串
- */
-export const formatUrlParams = (params: Record<string, any>): string => {
-  const searchParams = new URLSearchParams()
-
-  Object.keys(params).forEach(key => {
-    const value = params[key]
-    if (value !== null && value !== undefined && value !== '') {
-      searchParams.append(key, String(value))
+export function debounce<T extends (...args: any[]) => any>(
+  func: T,
+  wait: number,
+  immediate?: boolean
+): (...args: Parameters<T>) => void {
+  let timeout: ReturnType<typeof setTimeout> | null = null
+  
+  return function(this: any, ...args: Parameters<T>) {
+    const later = () => {
+      timeout = null
+      if (!immediate) func.apply(this, args)
     }
-  })
-
-  return searchParams.toString()
-}
-
-/**
- * 格式化持续时间
- * @param seconds 秒数
- * @returns 格式化的持续时间字符串
- */
-export const formatDuration = (seconds: number): string => {
-  if (seconds < 60) {
-    return `${seconds}秒`
-  } else if (seconds < 3600) {
-    const minutes = Math.floor(seconds / 60)
-    const remainingSeconds = seconds % 60
-    return remainingSeconds > 0 ? `${minutes}分${remainingSeconds}秒` : `${minutes}分钟`
-  } else if (seconds < 86400) {
-    const hours = Math.floor(seconds / 3600)
-    const remainingMinutes = Math.floor((seconds % 3600) / 60)
-    return remainingMinutes > 0 ? `${hours}小时${remainingMinutes}分钟` : `${hours}小时`
-  } else {
-    const days = Math.floor(seconds / 86400)
-    const remainingHours = Math.floor((seconds % 86400) / 3600)
-    return remainingHours > 0 ? `${days}天${remainingHours}小时` : `${days}天`
+    
+    const callNow = immediate && !timeout
+    
+    if (timeout) clearTimeout(timeout)
+    timeout = setTimeout(later, wait)
+    
+    if (callNow) func.apply(this, args)
   }
 }
 
 /**
- * 格式化倒计时
- * @param endTime 结束时间
- * @returns 倒计时字符串
+ * 节流函数
  */
-export const formatCountdown = (endTime: string | number | Date): string => {
-  const now = new Date().getTime()
-  let end: number
-
-  if (typeof endTime === 'string') {
-    end = new Date(endTime).getTime()
-  } else if (typeof endTime === 'number') {
-    end = endTime.toString().length === 10 ? endTime * 1000 : endTime
-  } else {
-    end = endTime.getTime()
+export function throttle<T extends (...args: any[]) => any>(
+  func: T,
+  wait: number,
+  options?: { leading?: boolean; trailing?: boolean }
+): (...args: Parameters<T>) => void {
+  let timeout: ReturnType<typeof setTimeout> | null = null
+  let previous = 0
+  
+  const { leading = true, trailing = true } = options || {}
+  
+  return function(this: any, ...args: Parameters<T>) {
+    const now = Date.now()
+    const remaining = wait - (now - previous)
+    
+    if (remaining <= 0 || remaining > wait) {
+      if (timeout) {
+        clearTimeout(timeout)
+        timeout = null
+      }
+      
+      if (leading) {
+        previous = now
+        func.apply(this, args)
+      }
+    } else if (!timeout && trailing) {
+      timeout = setTimeout(() => {
+        previous = Date.now()
+        timeout = null
+        func.apply(this, args)
+      }, remaining)
+    }
   }
-
-  if (end <= now) {
-    return '已结束'
-  }
-
-  const diff = end - now
-  const days = Math.floor(diff / (1000 * 60 * 60 * 24))
-  const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
-  const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))
-  const seconds = Math.floor((diff % (1000 * 60)) / 1000)
-
-  const parts: string[] = []
-
-  if (days > 0) parts.push(`${days}天`)
-  if (hours > 0) parts.push(`${hours}时`)
-  if (minutes > 0) parts.push(`${minutes}分`)
-  if (seconds > 0 && days === 0) parts.push(`${seconds}秒`)
-
-  return parts.join('') || '即将结束'
-}
-
-/**
- * 格式化数字单位
- * @param num 数字
- * @param decimals 小数位数
- * @returns 格式化后的数字字符串
- */
-export const formatUnit = (num: number, decimals: number = 1): string => {
-  if (num < 1000) {
-    return num.toString()
-  } else if (num < 10000) {
-    return `${(num / 1000).toFixed(decimals)}K`
-  } else if (num < 100000000) {
-    return `${(num / 10000).toFixed(decimals)}W`
-  } else {
-    return `${(num / 100000000).toFixed(decimals)}亿`
-  }
-}
-
-/**
- * 格式化颜色值
- * @param color 颜色值
- * @returns 格式化后的颜色值
- */
-export const formatColor = (color: string): string => {
-  if (!color) return '#000000'
-
-  // 如果已经是HEX格式，直接返回
-  if (color.startsWith('#')) {
-    return color
-  }
-
-  // 如果是RGB格式，转换为HEX
-  const rgbMatch = color.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/)
-  if (rgbMatch) {
-    const r = parseInt(rgbMatch[1])
-    const g = parseInt(rgbMatch[2])
-    const b = parseInt(rgbMatch[3])
-    return `#${((r << 16) | (g << 8) | b).toString(16).padStart(6, '0')}`
-  }
-
-  return color
-}
-
-/**
- * 格式化文本截断
- * @param text 文本
- * @param maxLength 最大长度
- * @param suffix 后缀
- * @returns 截断后的文本
- */
-export const formatTextTruncate = (
-  text: string,
-  maxLength: number,
-  suffix: string = '...'
-): string => {
-  if (!text || text.length <= maxLength) {
-    return text || ''
-  }
-
-  return text.substring(0, maxLength - suffix.length) + suffix
-}
-
-/**
- * 格式化关键词高亮
- * @param text 文本
- * @param keyword 关键词
- * @param tag 标签名
- * @returns 高亮后的HTML字符串
- */
-export const formatKeywordHighlight = (
-  text: string,
-  keyword: string,
-  tag: string = 'mark'
-): string => {
-  if (!text || !keyword) {
-    return text || ''
-  }
-
-  const regex = new RegExp(`(${keyword})`, 'gi')
-  return text.replace(regex, `<${tag}>$1</${tag}>`)
 }

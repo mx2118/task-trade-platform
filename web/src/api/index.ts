@@ -28,11 +28,28 @@ export {
 }
 
 // 导出所有API类型
-export type * from './types/auth'
-export type * from './types/user'
-export type * from './types/task'
-export type * from './types/payment'
-export type * from './types/common'
+export type { 
+  LoginParams as AuthLoginParams,
+  RegisterParams as AuthRegisterParams,
+  UserInfo as AuthUserInfo
+} from '../types/auth'
+export type { 
+  UserInfo as UserType,
+  Wallet as UserWallet,
+  LoginParams as UserLoginParams,
+  RegisterParams as UserRegisterParams,
+  UserBalance,
+  UserTransaction as Transaction,
+  Review,
+  Notification as UserNotification
+} from '../types/user'
+export type * from '../types/task'
+export type * from '../types/payment'
+export type { 
+  ApiResponse as CommonApiResponse,
+  PageData as CommonPageData,
+  PaginationParams as CommonPaginationParams
+} from '../types/common'
 
 // API 响应基础类型
 export interface ApiResponse<T = any> {

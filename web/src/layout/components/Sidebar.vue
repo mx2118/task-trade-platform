@@ -5,14 +5,6 @@
     @mouseleave="handleMouseLeave"
   >
     <div class="sidebar-content">
-      <!-- Logo区域 -->
-      <div class="sidebar-logo">
-        <img src="/logo.svg" alt="Logo" class="logo-img" />
-        <transition name="logo-text">
-          <span v-if="!collapsed" class="logo-text">任务平台</span>
-        </transition>
-      </div>
-      
       <!-- 菜单 -->
       <el-menu
         :default-active="activeMenu"
@@ -21,14 +13,6 @@
         router
         class="sidebar-menu"
       >
-        <!-- 首页 -->
-        <el-menu-item index="/home">
-          <el-icon>
-            <HomeFilled />
-          </el-icon>
-          <template #title>首页</template>
-        </el-menu-item>
-        
         <!-- 任务中心 -->
         <el-sub-menu index="tasks">
           <template #title>
@@ -43,6 +27,18 @@
               <Search />
             </el-icon>
             <template #title>任务大厅</template>
+          </el-menu-item>
+          
+          <el-menu-item 
+            v-for="category in categories" 
+            :key="category.id"
+            :index="`/tasks?category_id=${category.id}`" 
+            class="sub-item"
+          >
+            <el-icon>
+              <Folder />
+            </el-icon>
+            <template #title>{{ category.name }}</template>
           </el-menu-item>
           
           <el-menu-item index="/publish" v-if="isLoggedIn">
@@ -120,8 +116,9 @@ import { computed, ref, onMounted, onUnmounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useAppStore } from '@/stores/app'
 import { useUserStore } from '@/stores/user'
+import { categoryApi } from '@/api'
+import type { Category } from '@/types'
 import {
-  HomeFilled,
   List,
   Search,
   Plus,
@@ -130,7 +127,14 @@ import {
   UserFilled,
   Message,
   QuestionFilled,
-  InfoFilled
+  InfoFilled,
+  Clock,
+  Loading,
+  CircleCheck,
+  Document,
+  View,
+  CircleClose,
+  Folder
 } from '@element-plus/icons-vue'
 
 interface Props {
@@ -149,7 +153,22 @@ const userStore = useUserStore()
 
 const activeMenu = computed(() => route.path)
 const isLoggedIn = computed(() => userStore.isLoggedIn)
-const userAvatar = computed(() => userStore.avatar)
+const userAvatar = computed(() => userStore.avatar || '')
+
+// 分类列表
+const categories = ref<Category[]>([])
+
+// 加载分类
+const loadCategories = async () => {
+  try {
+    const response = await categoryApi.getCategories()
+    const responseData = response.data?.data || response.data || {}
+    categories.value = responseData.categories || responseData.list || []
+  } catch (error: any) {
+    console.error('加载分类失败:', error)
+    categories.value = []
+  }
+}
 
 // 鼠标离开处理（仅桌面端）
 const handleMouseLeave = () => {
@@ -182,6 +201,7 @@ const handleKeydown = (e: KeyboardEvent) => {
 
 onMounted(() => {
   document.addEventListener('keydown', handleKeydown)
+  loadCategories()
 })
 
 onUnmounted(() => {
@@ -207,12 +227,17 @@ onUnmounted(() => {
   }
   
   @media (max-width: $breakpoint-md) {
+    // 移动端：默认隐藏侧边栏
     transform: translateX(-100%);
-    transition: transform 0.3s ease;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    width: 280px; // 移动端固定宽度
+    z-index: $z-index-modal;
+    box-shadow: none;
     
+    // 移动端：当未收起时显示侧边栏
     &:not(.sidebar-collapsed) {
       transform: translateX(0);
-      box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
+      box-shadow: 4px 0 24px rgba(0, 0, 0, 0.12);
     }
   }
 }
@@ -225,12 +250,13 @@ onUnmounted(() => {
 }
 
 .sidebar-logo {
-  height: 60px;
+  height: 64px;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: $spacing-md;
   border-bottom: 1px solid $border-lighter;
+  background: linear-gradient(135deg, rgba($primary-color, 0.03) 0%, rgba($primary-color, 0.01) 100%);
 }
 
 .logo-img {
@@ -252,6 +278,7 @@ onUnmounted(() => {
   border-right: none;
   overflow-y: auto;
   overflow-x: hidden;
+  padding: 8px 0;
   
   // 自定义滚动条
   &::-webkit-scrollbar {
@@ -271,37 +298,68 @@ onUnmounted(() => {
     }
   }
   
-  .el-menu-item,
-  .el-sub-menu__title {
+  :deep(.el-menu-item),
+  :deep(.el-sub-menu__title) {
     height: 48px;
     line-height: 48px;
     margin: 2px 8px;
-    border-radius: $border-radius-base;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    color: #374151;
+    font-size: 15px;
     
     &:hover {
-      background-color: rgba($primary-color, 0.1);
+      background-color: rgba($primary-color, 0.08);
       color: $primary-color;
     }
     
     &.is-active {
       background: linear-gradient(135deg, $primary-color 0%, lighten($primary-color, 10%) 100%);
       color: white;
+      font-weight: 500;
+      box-shadow: 0 2px 8px rgba($primary-color, 0.25);
+    }
+    
+    .el-icon {
+      font-size: 18px;
+      color: inherit;
     }
   }
   
-  .el-sub-menu {
+  :deep(.el-sub-menu) {
     .el-sub-menu__title {
+      color: #374151;
+      font-weight: 500;
+      
       &:hover {
-        background-color: rgba($primary-color, 0.1);
+        background-color: rgba($primary-color, 0.08);
         color: $primary-color;
       }
     }
     
     .el-menu-item {
       padding-left: 52px !important;
+      color: #4b5563;
+      
+      &.sub-item {
+        padding-left: 64px !important;
+        height: 42px;
+        line-height: 42px;
+        font-size: 14px;
+        
+        .el-icon {
+          font-size: 16px;
+        }
+      }
       
       &.is-active {
-        background-color: rgba($primary-color, 0.15);
+        background-color: rgba($primary-color, 0.12);
+        color: $primary-color;
+        font-weight: 500;
+      }
+      
+      &:hover {
+        background-color: rgba($primary-color, 0.08);
         color: $primary-color;
       }
     }
@@ -362,6 +420,7 @@ onUnmounted(() => {
   
   .sidebar-logo {
     border-bottom-color: var(--el-border-color);
+    background: linear-gradient(135deg, rgba($primary-color, 0.08) 0%, rgba($primary-color, 0.03) 100%);
   }
   
   .logo-text {
@@ -369,36 +428,46 @@ onUnmounted(() => {
   }
   
   .sidebar-menu {
-    .el-menu-item,
-    .el-sub-menu__title {
-      color: var(--el-text-color-primary);
+    :deep(.el-menu-item),
+    :deep(.el-sub-menu__title) {
+      color: #d1d5db;
       
       &:hover {
-        background-color: rgba($primary-color, 0.15);
+        background-color: rgba($primary-color, 0.12);
         color: $primary-color;
       }
       
       &.is-active {
         background: linear-gradient(135deg, $primary-color 0%, lighten($primary-color, 10%) 100%);
         color: white;
+        box-shadow: 0 2px 12px rgba($primary-color, 0.3);
+      }
+      
+      .el-icon {
+        color: inherit;
       }
     }
     
-    .el-sub-menu {
+    :deep(.el-sub-menu) {
       .el-sub-menu__title {
-        color: var(--el-text-color-primary);
+        color: #d1d5db;
         
         &:hover {
-          background-color: rgba($primary-color, 0.15);
+          background-color: rgba($primary-color, 0.12);
           color: $primary-color;
         }
       }
       
       .el-menu-item {
-        color: var(--el-text-color-regular);
+        color: #9ca3af;
         
         &.is-active {
-          background-color: rgba($primary-color, 0.2);
+          background-color: rgba($primary-color, 0.15);
+          color: $primary-color;
+        }
+        
+        &:hover {
+          background-color: rgba($primary-color, 0.12);
           color: $primary-color;
         }
       }

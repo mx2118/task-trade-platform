@@ -92,7 +92,7 @@ func ResponseLog(logger *zap.Logger) gin.HandlerFunc {
             zap.Int("status", c.Writer.Status()),
             zap.Duration("duration", duration),
             zap.Int("response_size", writer.body.Len()),
-            zap.String("client_ip", c.ClientIP),
+            zap.String("client_ip", c.ClientIP()),
             zap.Any("headers", c.Writer.Header()),
         )
         

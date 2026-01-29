@@ -4,7 +4,7 @@ import { ElNotification } from 'element-plus'
 
 export const useAppStore = defineStore('app', () => {
   // 状态
-  const sidebarCollapsed = ref(false)
+  const sidebarCollapsed = ref(true) // 默认收起，在 initAppSettings 中根据设备类型调整
   const device = ref<'desktop' | 'mobile'>('desktop')
   const theme = ref<'light' | 'dark'>('light')
   const language = ref('zh-CN')
@@ -44,10 +44,18 @@ export const useAppStore = defineStore('app', () => {
   // Actions
   const toggleSidebar = () => {
     sidebarCollapsed.value = !sidebarCollapsed.value
+    // 只在桌面端保存侧边栏状态
+    if (device.value === 'desktop') {
+      localStorage.setItem('sidebarCollapsed', JSON.stringify(sidebarCollapsed.value))
+    }
   }
   
   const setSidebarCollapsed = (collapsed: boolean) => {
     sidebarCollapsed.value = collapsed
+    // 只在桌面端保存侧边栏状态
+    if (device.value === 'desktop') {
+      localStorage.setItem('sidebarCollapsed', JSON.stringify(collapsed))
+    }
   }
   
   const setDevice = (type: 'desktop' | 'mobile') => {
@@ -112,22 +120,6 @@ export const useAppStore = defineStore('app', () => {
   
   // 初始化应用设置
   const initAppSettings = () => {
-    // 从localStorage恢复设置
-    const savedTheme = localStorage.getItem('theme') as 'light' | 'dark' | null
-    if (savedTheme) {
-      setTheme(savedTheme)
-    }
-    
-    const savedLanguage = localStorage.getItem('language')
-    if (savedLanguage) {
-      setLanguage(savedLanguage)
-    }
-    
-    const savedSidebarCollapsed = localStorage.getItem('sidebarCollapsed')
-    if (savedSidebarCollapsed) {
-      setSidebarCollapsed(JSON.parse(savedSidebarCollapsed))
-    }
-    
     // 检测设备类型
     const checkDevice = () => {
       const width = window.innerWidth
@@ -138,7 +130,36 @@ export const useAppStore = defineStore('app', () => {
       }
     }
     
+    // 先检测设备类型（这会自动设置移动端的侧边栏状态）
     checkDevice()
+    
+    // 只在桌面端恢复侧边栏状态
+    if (device.value === 'desktop') {
+      const savedSidebarCollapsed = localStorage.getItem('sidebarCollapsed')
+      if (savedSidebarCollapsed !== null) {
+        setSidebarCollapsed(JSON.parse(savedSidebarCollapsed))
+      } else {
+        // 桌面端默认展开
+        setSidebarCollapsed(false)
+      }
+    }
+    
+    // 从localStorage恢复主题设置，如果没有则默认使用日间模式
+    const savedTheme = localStorage.getItem('theme') as 'light' | 'dark' | null
+    if (savedTheme) {
+      setTheme(savedTheme)
+    } else {
+      // 确保默认是日间模式
+      setTheme('light')
+    }
+    
+    // 从localStorage恢复语言设置
+    const savedLanguage = localStorage.getItem('language')
+    if (savedLanguage) {
+      setLanguage(savedLanguage)
+    }
+    
+    // 监听窗口大小变化
     window.addEventListener('resize', checkDevice)
   }
   

@@ -3,7 +3,7 @@
     <div class="register-card">
       <div class="register-header">
         <div class="logo">
-          <img src="@/assets/logo.png" alt="Task Platform" />
+          <div class="logo-icon">🚀</div>
         </div>
         <h2>注册新用户</h2>
         <p>加入任务交易平台，开启您的任务之旅</p>
@@ -434,10 +434,17 @@ const goToLogin = () => {
       .logo {
         margin-bottom: 16px;
 
-        img {
+        .logo-icon {
           width: 60px;
           height: 60px;
-          border-radius: 12px;
+          margin: 0 auto;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 36px;
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          border-radius: 16px;
+          box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
         }
       }
 

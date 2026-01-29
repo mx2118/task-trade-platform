@@ -13,13 +13,13 @@
       </el-button>
       
       <!-- Logo -->
-      <router-link to="/" class="logo">
+      <div class="logo" @click="$emit('toggleSidebar')" style="cursor: pointer;">
         <img src="/logo.svg" alt="任务交易平台" class="logo-img" />
         <span v-if="!isMobile" class="logo-text">任务交易平台</span>
-      </router-link>
+      </div>
     </div>
     
-    <div class="header-center">
+    <div class="header-center" style="display: none;">
       <!-- 搜索框 -->
       <el-input
         v-model="searchKeyword"
@@ -37,6 +37,18 @@
     </div>
     
     <div class="header-right">
+      <!-- 检索任务按钮 -->
+      <el-button
+        class="header-action"
+        text
+        @click="openSearchDialog"
+      >
+        <el-icon :size="18">
+          <Search />
+        </el-icon>
+        <span v-if="!isMobile" class="btn-text">检索任务</span>
+      </el-button>
+      
       <!-- 主题切换 -->
       <el-button
         class="header-action"
@@ -88,6 +100,10 @@
               <el-icon><Wallet /></el-icon>
               我的钱包
             </el-dropdown-item>
+            <el-dropdown-item command="publish">
+              <el-icon><Plus /></el-icon>
+              发布任务
+            </el-dropdown-item>
             <el-dropdown-item command="tasks">
               <el-icon><List /></el-icon>
               我的任务
@@ -128,7 +144,8 @@ import {
   Message,
   Setting,
   SwitchButton,
-  ArrowDown
+  ArrowDown,
+  Plus
 } from '@element-plus/icons-vue'
 import NotificationPanel from './NotificationPanel.vue'
 
@@ -145,12 +162,18 @@ const unreadCount = ref(3) // 模拟未读消息数量
 
 const isMobile = computed(() => appStore.isMobile)
 const isDark = computed(() => appStore.isDarkTheme)
-const username = computed(() => userStore.nickname || userStore.username)
-const userAvatar = computed(() => userStore.avatar)
+const username = computed(() => userStore.nickname || userStore.username || '访客')
+const userAvatar = computed(() => userStore.avatar || '')
 
 // 切换主题
 const toggleTheme = () => {
   appStore.toggleTheme()
+}
+
+// 打开检索对话框
+const openSearchDialog = () => {
+  // 触发全局事件
+  window.dispatchEvent(new CustomEvent('open-search-dialog'))
 }
 
 // 处理搜索
@@ -168,6 +191,7 @@ const handleUserCommand = (command: string) => {
   const commands: Record<string, () => void> = {
     profile: () => router.push('/profile'),
     wallet: () => router.push('/wallet'),
+    publish: () => router.push('/tasks/publish'),
     tasks: () => router.push('/my-tasks'),
     messages: () => router.push('/messages'),
     settings: () => router.push('/settings'),
@@ -266,6 +290,12 @@ const markAsRead = () => {
   &:hover {
     color: $primary-color;
   }
+  
+  .btn-text {
+    margin-left: 4px;
+    font-size: $font-size-small;
+    color: inherit;
+  }
 }
 
 .user-info {
@@ -287,10 +317,12 @@ const markAsRead = () => {
 }
 
 .user-name {
-  font-size: $font-size-sm;
+  font-size: $font-size-small;
   color: $text-primary;
   max-width: 100px;
-  @extend .text-ellipsis;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .dropdown-icon {

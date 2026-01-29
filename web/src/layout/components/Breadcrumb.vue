@@ -40,6 +40,18 @@ const router = useRouter()
 const routeMap: Record<string, { title: string; icon?: any }> = {
   '/': { title: '首页', icon: HomeFilled },
   '/home': { title: '首页', icon: HomeFilled },
+  '/layout': { title: '首页', icon: HomeFilled },
+  '/layout/tasks': { title: '任务大厅', icon: List },
+  '/layout/publish': { title: '发布任务', icon: Plus },
+  '/layout/my-tasks': { title: '我的任务', icon: UserFilled },
+  '/layout/wallet': { title: '我的钱包', icon: Wallet },
+  '/layout/dashboard': { title: '控制台', icon: HomeFilled },
+  '/layout/user': { title: '个人中心', icon: UserFilled },
+  '/layout/payment': { title: '支付', icon: Wallet },
+  '/layout/profile': { title: '个人中心', icon: UserFilled },
+  '/layout/messages': { title: '消息中心', icon: Message },
+  '/layout/help': { title: '帮助中心', icon: QuestionFilled },
+  '/layout/about': { title: '关于我们', icon: InfoFilled },
   '/tasks': { title: '任务大厅', icon: List },
   '/publish': { title: '发布任务', icon: Plus },
   '/my-tasks': { title: '我的任务', icon: UserFilled },
@@ -53,10 +65,15 @@ const routeMap: Record<string, { title: string; icon?: any }> = {
 const breadcrumbs = computed(() => {
   const items: BreadcrumbItem[] = []
   
-  // 始终添加首页
+  // 如果当前路径是任务大厅，直接返回空数组（不显示面包屑）
+  if (route.path === '/' || route.path === '/layout' || route.path === '/layout/tasks' || route.path === '/tasks') {
+    return items
+  }
+  
+  // 对于其他页面，始终添加首页
   items.push({
     title: '首页',
-    path: '/',
+    path: '/layout/tasks',
     icon: HomeFilled
   })
   
@@ -68,17 +85,21 @@ const breadcrumbs = computed(() => {
   pathSegments.forEach((segment, index) => {
     currentPath += `/${segment}`
     
+    // 跳过 layout 段
+    if (segment === 'layout') {
+      return
+    }
+    
     // 处理动态路由（如任务详情）
     if (/^\d+$/.test(segment)) {
       const parentPath = currentPath.substring(0, currentPath.lastIndexOf('/'))
-      const parentRoute = routeMap[parentPath]
       
-      if (parentRoute && parentPath === '/tasks') {
+      if (parentPath.includes('/tasks')) {
         items.push({
           title: '任务详情',
           path: currentPath
         })
-      } else if (parentRoute && parentPath === '/my-tasks') {
+      } else if (parentPath.includes('/my-tasks')) {
         items.push({
           title: '任务详情',
           path: currentPath
@@ -86,7 +107,7 @@ const breadcrumbs = computed(() => {
       }
     } else {
       const routeInfo = routeMap[currentPath]
-      if (routeInfo) {
+      if (routeInfo && currentPath !== '/layout' && currentPath !== '/layout/tasks') {
         items.push({
           title: routeInfo.title,
           path: currentPath,
@@ -95,11 +116,6 @@ const breadcrumbs = computed(() => {
       }
     }
   })
-  
-  // 移除重复的首页（如果当前路径就是首页）
-  if (items.length > 1 && items[0].path === route.path) {
-    items.shift()
-  }
   
   return items
 })
@@ -113,7 +129,7 @@ const breadcrumbs = computed(() => {
       align-items: center;
       gap: $spacing-xs;
       color: $text-regular;
-      font-size: $font-size-sm;
+      font-size: $font-size-small;
       
       &:hover {
         color: $primary-color;
@@ -146,7 +162,7 @@ const breadcrumbs = computed(() => {
   .breadcrumb {
     .el-breadcrumb__item {
       .el-breadcrumb__inner {
-        font-size: $font-size-xs;
+        font-size: $font-size-extra-small;
       }
     }
     

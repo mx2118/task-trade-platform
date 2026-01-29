@@ -39,6 +39,27 @@ export const userApi = {
       }
     })
   },
+  /**
+   * 上传头像
+   */
+  uploadAvatar(file: File): Promise<ApiResponse<{ avatar: string }>> {
+    const formData = new FormData()
+    formData.append('avatar', file)
+    return request({
+      url: '/user/avatar/upload',
+      method: 'POST',
+      data: formData,
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    })
+  },
+  /**
+   * 获取用户信息 (别名方法)
+   */
+  fetchUserInfo(): Promise<ApiResponse<User>> {
+    return this.getUserInfo()
+  },
 
   /**
    * 获取用户统计信息

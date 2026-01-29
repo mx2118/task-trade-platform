@@ -5,7 +5,6 @@ import (
 
     "github.com/gin-gonic/gin"
     "task-platform-api/internal/config"
-    "task-platform-api/pkg/utils"
 )
 
 // CORS 跨域中间件

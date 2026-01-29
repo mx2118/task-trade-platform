@@ -153,14 +153,11 @@
                   <h4>{{ task.title }}</h4>
                   <p class="task-desc">{{ task.description }}</p>
                   <div class="task-meta">
-                    <el-tag :type="getTaskStatusType(task.status)">
+                    <el-tag :type="getTaskStatusType(task.status)" size="small">
                       {{ getTaskStatusText(task.status) }}
                     </el-tag>
-                    <span class="task-type">
-                      {{ task.role === 'publisher' ? '发布' : '接取' }}
-                    </span>
                     <span class="task-time">
-                      {{ formatTime(task.created_at) }}
+                      {{ formatTime(task.createdAt) }}
                     </span>
                   </div>
                 </div>
@@ -203,17 +200,17 @@
                 class="transaction-item"
               >
                 <div class="transaction-icon">
-                  <el-icon :color="transaction.type === 'income' ? '#67c23a' : '#f56c6c'">
-                    <component :is="getTransactionIcon(transaction.type)" />
+                  <el-icon :color="transaction.tradeType === 'income' ? '#67c23a' : '#f56c6c'">
+                    <component :is="getTransactionIcon(transaction.tradeType)" />
                   </el-icon>
                 </div>
                 <div class="transaction-info">
-                  <h4>{{ transaction.description }}</h4>
-                  <p class="transaction-time">{{ formatTime(transaction.created_at) }}</p>
+                  <h4>{{ transaction.remark || transaction.tradeType }}</h4>
+                  <p class="transaction-time">{{ formatTime(transaction.createdAt) }}</p>
                 </div>
                 <div class="transaction-amount">
-                  <span :class="transaction.type">
-                    {{ transaction.type === 'income' ? '+' : '-' }}¥{{ formatMoney(transaction.amount) }}
+                  <span :class="transaction.tradeType">
+                    {{ transaction.tradeType === 'income' ? '+' : '-' }}¥{{ formatMoney(transaction.amount) }}
                   </span>
                 </div>
               </div>
@@ -244,11 +241,11 @@
               >
                 <div class="review-header">
                   <div class="reviewer-info">
-                    <el-avatar :size="40" :src="review.reviewer_avatar">
-                      {{ review.reviewer_name?.charAt(0) }}
+                    <el-avatar :size="40" :src="review.reviewerAvatar">
+                      {{ review.reviewerName?.charAt(0) }}
                     </el-avatar>
                     <div class="reviewer-details">
-                      <h4>{{ review.reviewer_name }}</h4>
+                      <h4>{{ review.reviewerName }}</h4>
                       <div class="rating">
                         <el-rate
                           v-model="review.rating"
@@ -258,13 +255,13 @@
                       </div>
                     </div>
                   </div>
-                  <span class="review-time">{{ formatTime(review.created_at) }}</span>
+                  <span class="review-time">{{ formatTime(review.createTime) }}</span>
                 </div>
                 <div class="review-content">
-                  <p>{{ review.comment }}</p>
+                  <p>{{ review.content }}</p>
                 </div>
                 <div class="review-footer">
-                  <span class="task-link">任务：{{ review.task_title }}</span>
+                  <span class="task-link">任务：{{ review.taskId }}</span>
                 </div>
               </div>
 
@@ -299,17 +296,17 @@
               <div class="security-item">
                 <div class="security-info">
                   <h4>微信</h4>
-                  <p>{{ userStore.wechat_verified ? '已认证' : '未认证' }}</p>
+                  <p>{{ userStore.userInfo?.wechat_verified ? '已认证' : '未认证' }}</p>
                 </div>
-                <el-button>{{ userStore.wechat_verified ? '解除' : '绑定' }}微信</el-button>
+                <el-button>{{ userStore.userInfo?.wechat_verified ? '解除' : '绑定' }}微信</el-button>
               </div>
 
               <div class="security-item">
                 <div class="security-info">
                   <h4>支付宝</h4>
-                  <p>{{ userStore.alipay_verified ? '已认证' : '未认证' }}</p>
+                  <p>{{ userStore.userInfo?.alipay_verified ? '已认证' : '未认证' }}</p>
                 </div>
-                <el-button>{{ userStore.alipay_verified ? '解除' : '绑定' }}支付宝</el-button>
+                <el-button>{{ userStore.userInfo?.alipay_verified ? '解除' : '绑定' }}支付宝</el-button>
               </div>
             </div>
           </div>
@@ -384,9 +381,15 @@ const reviewStats = reactive({
 
 const wallet = ref<WalletType>({
   balance: 0,
+  frozenAmount: 0,
   frozen_amount: 0,
+  totalIncome: 0,
   total_income: 0,
-  total_expense: 0
+  totalExpense: 0,
+  createdAt: '',
+  updatedAt: '',
+  id: 0,
+  userId: 0
 })
 
 const tasks = ref<Task[]>([])
@@ -545,15 +548,12 @@ const handleAvatarUpload = async (event: Event) => {
   if (!file) return
 
   try {
-    const formData = new FormData()
-    formData.append('avatar', file)
-    
-    await userApi.uploadAvatar(formData)
+    await userApi.uploadAvatar(file)
     
     ElMessage.success('头像上传成功')
     
     // 重新加载用户信息
-    await userStore.fetchUserInfo()
+    await userStore.getUserInfo()
   } catch (error: any) {
     ElMessage.error(error.message || '头像上传失败')
   }

@@ -8,6 +8,7 @@ import (
     "github.com/gin-gonic/gin"
     "github.com/golang-jwt/jwt/v5"
     "go.uber.org/zap"
+    "gorm.io/gorm"
 
     "task-platform-api/internal/config"
     "task-platform-api/internal/models"
@@ -74,7 +75,7 @@ func OptionalAuth(cfg *config.JWTConfig, logger *zap.Logger) gin.HandlerFunc {
 // RequireRole 角色权限中间件
 func RequireRole(roles ...string) gin.HandlerFunc {
     return func(c *gin.Context) {
-        userID, exists := c.Get("user_id")
+        _, exists := c.Get("user_id")
         if !exists {
             utils.ErrorResponse(c, http.StatusUnauthorized, "未认证用户")
             c.Abort()

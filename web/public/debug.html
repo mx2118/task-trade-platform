@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>调试页面 - 检测前端加载问题</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .status { padding: 10px; margin: 10px 0; border-radius: 5px; }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .info { background: #d1ecf1; color: #0c5460; }
+        .loading { background: #fff3cd; color: #856404; }
+        pre { background: #f5f5f5; padding: 15px; border-radius: 5px; overflow-x: auto; }
+        button { padding: 10px 20px; margin: 5px; cursor: pointer; font-size: 14px; }
+    </style>
+</head>
+<body>
+    <h1>🔍 前端加载调试工具</h1>
+    
+    <div id="status"></div>
+    
+    <h2>检测项目</h2>
+    <button onclick="runAllTests()">运行所有测试</button>
+    <button onclick="testVite()">测试Vite</button>
+    <button onclick="testAPI()">测试API</button>
+    <button onclick="testVue()">测试Vue模块</button>
+    
+    <h2>详细日志</h2>
+    <pre id="log"></pre>
+
+    <script>
+        const statusDiv = document.getElementById('status');
+        const logDiv = document.getElementById('log');
+        
+        function log(message, type = 'info') {
+            const time = new Date().toLocaleTimeString();
+            logDiv.textContent += `[${time}] ${type.toUpperCase()}: ${message}\n`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+        
+        function showStatus(message, type = 'info') {
+            statusDiv.innerHTML = `<div class="status ${type}">${message}</div>`;
+        }
+
+        async function testVite() {
+            try {
+                log('测试Vite开发服务器...');
+                showStatus('⏳ 正在测试Vite服务器...', 'loading');
+                
+                const response = await fetch('/');
+                const html = await response.text();
+                
+                if (html.includes('vite') && html.includes('script')) {
+                    log('✓ Vite服务器正常');
+                    showStatus('✓ Vite服务器正常', 'success');
+                    return true;
+                } else {
+                    log('✗ HTML内容异常', 'error');
+                    showStatus('✗ HTML内容异常', 'error');
+                    return false;
+                }
+            } catch (error) {
+                log(`✗ Vite测试失败: ${error.message}`, 'error');
+                showStatus(`✗ Vite测试失败: ${error.message}`, 'error');
+                return false;
+            }
+        }
+
+        async function testAPI() {
+            try {
+                log('测试后端API...');
+                showStatus('⏳ 正在测试后端API...', 'loading');
+                
+                const response = await fetch('http://49.234.39.189:8080/api/tasks?page=1&limit=1');
+                const data = await response.json();
+                
+                if (data.code === 200) {
+                    log(`✓ API正常，任务总数: ${data.data.total}`);
+                    showStatus(`✓ API正常，任务总数: ${data.data.total}`, 'success');
+                    return true;
+                } else {
+                    log(`✗ API返回错误: ${data.message}`, 'error');
+                    showStatus(`✗ API返回错误`, 'error');
+                    return false;
+                }
+            } catch (error) {
+                log(`✗ API测试失败: ${error.message}`, 'error');
+                showStatus(`✗ API测试失败: ${error.message}`, 'error');
+                return false;
+            }
+        }
+
+        async function testVue() {
+            try {
+                log('测试Vue模块加载...');
+                showStatus('⏳ 正在测试Vue模块...', 'loading');
+                
+                // 测试主要的JS文件是否能加载
+                const response = await fetch('/src/main.ts');
+                const content = await response.text();
+                
+                if (content.includes('createApp') && content.includes('mount')) {
+                    log('✓ main.ts 加载正常');
+                    
+                    // 检查是否有语法错误
+                    if (content.includes('Promise.race') || content.includes('async')) {
+                        log('✓ 发现异步代码，这可能导致加载延迟');
+                    }
+                    
+                    showStatus('✓ Vue模块加载正常', 'success');
+                    return true;
+                } else {
+                    log('✗ main.ts 内容异常', 'error');
+                    showStatus('✗ main.ts 内容异常', 'error');
+                    return false;
+                }
+            } catch (error) {
+                log(`✗ Vue模块测试失败: ${error.message}`, 'error');
+                showStatus(`✗ Vue模块测试失败: ${error.message}`, 'error');
+                return false;
+            }
+        }
+
+        async function checkBrowserConsole() {
+            log('提示：请打开浏览器控制台(F12)查看更多错误信息');
+            log('常见问题:');
+            log('1. CORS跨域错误');
+            log('2. 模块加载失败');  
+            log('3. API请求超时');
+            log('4. JavaScript语法错误');
+        }
+
+        async function runAllTests() {
+            log('====== 开始全面测试 ======');
+            showStatus('⏳ 正在运行测试...', 'loading');
+            
+            const results = {
+                vite: await testVite(),
+                api: await testAPI(),
+                vue: await testVue()
+            };
+            
+            await checkBrowserConsole();
+            
+            const allPassed = Object.values(results).every(r => r);
+            
+            if (allPassed) {
+                log('====== 所有测试通过 ======');
+                showStatus('✓ 所有测试通过！如果页面还是加载中，请检查浏览器控制台', 'success');
+            } else {
+                log('====== 部分测试失败 ======', 'error');
+                showStatus('✗ 部分测试失败，请查看详细日志', 'error');
+            }
+            
+            log('\n建议操作:');
+            log('1. 打开 http://49.234.39.189:3000/layout/tasks');
+            log('2. 按 F12 打开开发者工具');
+            log('3. 切换到 Console 标签');
+            log('4. 查看红色错误信息');
+            log('5. 切换到 Network 标签');
+            log('6. 查看哪个请求失败或pending');
+        }
+
+        // 页面加载完成后自动运行测试
+        window.onload = () => {
+            log('页面加载完成，准备开始测试...');
+            setTimeout(runAllTests, 500);
+        };
+    </script>
+</body>
+</html>

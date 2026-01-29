@@ -16,12 +16,12 @@ type Response struct {
 
 // PageResponse 分页响应结构
 type PageResponse struct {
-    List       interface{} `json:"list"`       // 数据列表
-    Pagination Pagination  `json:"pagination"` // 分页信息
+    List       interface{}     `json:"list"`       // 数据列表
+    Pagination PaginationInfo  `json:"pagination"` // 分页信息
 }
 
-// Pagination 分页信息
-type Pagination struct {
+// PaginationInfo 分页信息
+type PaginationInfo struct {
     Page       int `json:"page"`        // 当前页码
     PageSize   int `json:"page_size"`   // 每页数量
     Total      int64 `json:"total"`      // 总记录数
@@ -51,7 +51,7 @@ func ErrorResponse(c *gin.Context, code int, message string) {
 }
 
 // SuccessPageResponse 分页成功响应
-func SuccessPageResponse(c *gin.Context, list interface{}, pagination Pagination) {
+func SuccessPageResponse(c *gin.Context, list interface{}, pagination PaginationInfo) {
     data := PageResponse{
         List:       list,
         Pagination: pagination,

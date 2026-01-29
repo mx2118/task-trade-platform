@@ -1,0 +1,161 @@
+# 任务交易平台性能优化配置文件
+
+server:
+  port: "8080"
+  mode: "release"
+  read_timeout: 30    # 增加读取超时
+  write_timeout: 30   # 增加写入超时
+  domain: "49.234.39.189"
+  is_https: false
+
+database:
+  host: "localhost"
+  port: 3306
+  username: "root"
+  password: "root123456"
+  database: "task_platform"
+  max_idle_conn: 20    # 增加空闲连接池大小
+  max_open_conn: 100   # 增加最大连接数
+  log_level: "warn"    # 生产环境减少日志输出
+
+redis:
+  host: "localhost"
+  port: 6379
+  password: ""
+  db: 0
+  pool_size: 50        # 增加连接池大小
+
+jwt:
+  secret: "your-jwt-secret-key-change-this-in-production"
+  expire_time: 7200    # 2小时
+  refresh_expire_time: 604800  # 7天
+
+shouqianba:
+  app_id: "your_app_id"
+  merchant_no: "your_merchant_no"
+  secret_key: "your_secret_key"
+  api_url: "https://api.shouqianba.com"
+  sandbox_url: "https://sandbox.shouqianba.com"
+  sandbox: true
+  notify_url: "http://49.234.39.189:8080/api/payment/notify"
+
+wechat:
+  app_id: "your_wechat_app_id"
+  app_secret: "your_wechat_app_secret"
+  mch_id: "your_merchant_id"
+  api_key: "your_wechat_api_key"
+
+alipay:
+  app_id: "your_alipay_app_id"
+  private_key: "your_alipay_private_key"
+  public_key: "your_alipay_public_key"
+  gateway_url: "https://openapi.alipay.com/gateway.do"
+
+log:
+  level: "info"
+  format: "json"
+  output: "file"
+  file_path: "/var/log/task-platform/app.log"
+  max_size: 100        # MB
+  max_age: 30          # days
+  max_backups: 10
+
+oss:
+  endpoint: "https://oss-cn-beijing.aliyuncs.com"
+  access_key_id: "your_access_key_id"
+  access_key_secret: "your_access_key_secret"
+  bucket: "task-platform"
+
+sms:
+  provider: "aliyun"
+  access_key: "your_sms_access_key"
+  secret_key: "your_sms_secret_key"
+  sign_name: "任务交易平台"
+
+email:
+  host: "smtp.example.com"
+  port: 587
+  username: "noreply@task-platform.com"
+  password: "your_email_password"
+  from: "任务交易平台 <noreply@task-platform.com>"
+
+security:
+  enable_cors: true
+  allow_origins:
+    - "http://49.234.39.189:3000"
+    - "http://49.234.39.189:8080"
+    - "http://localhost:3000"
+  allow_methods:
+    - "GET"
+    - "POST"
+    - "PUT"
+    - "DELETE"
+    - "OPTIONS"
+  allow_headers:
+    - "Content-Type"
+    - "Authorization"
+    - "X-Requested-With"
+  rate_limit: 1000    # 每秒1000次请求
+
+risk_control:
+  enable_device_fingerprint: true
+  max_register_per_ip: 5
+  max_task_per_user: 10
+  max_withdraw_per_day: 5000
+
+# 性能优化相关配置
+performance:
+  # 并发控制
+  concurrency:
+    max_workers: 50
+    worker_queue_size: 1000
+    rate_limit_rps: 500
+    rate_limit_burst: 1000
+  
+  # 缓存配置
+  cache:
+    user_ttl: 1800          # 用户缓存30分钟
+    task_ttl: 900           # 任务缓存15分钟
+    task_list_ttl: 300      # 任务列表缓存5分钟
+    hot_tasks_ttl: 600      # 热门任务缓存10分钟
+    session_ttl: 604800     # 会话缓存7天
+    
+  # 数据库优化
+  database:
+    enable_query_cache: true
+    slow_query_threshold: 1000  # 毫秒
+    connection_pool_timeout: 30
+    query_timeout: 10
+    
+  # 熔断器配置
+  circuit_breaker:
+    max_failures: 5
+    reset_timeout: 60  # 秒
+    
+  # 批处理配置
+  batch:
+    size: 100
+    flush_timeout: 5  # 秒
+
+# 监控配置
+monitoring:
+  enable_prometheus: true
+  prometheus_port: "9090"
+  enable_trace: true
+  metrics_path: "/metrics"
+  health_check_path: "/health"
+  
+  # 性能指标收集
+  performance_metrics:
+    enabled: true
+    interval: 30  # 秒
+    
+  # 慢查询监控
+  slow_query_monitoring:
+    enabled: true
+    threshold: 1000  # 毫秒
+    
+  # 内存监控
+  memory_monitoring:
+    enabled: true
+    threshold: 80  # 百分比

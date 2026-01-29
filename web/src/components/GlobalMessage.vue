@@ -91,6 +91,21 @@ const getIcon = (type: string) => {
   return iconMap[type] || InfoFilled
 }
 
+// 扩展 window 类型
+declare global {
+  interface Window {
+    $message: {
+      success: (text: string, options?: Partial<MessageItem>) => void
+      warning: (text: string, options?: Partial<MessageItem>) => void
+      error: (text: string, options?: Partial<MessageItem>) => void
+      info: (text: string, options?: Partial<MessageItem>) => void
+      close: (id?: number) => void
+      closeAll: () => void
+      clear: () => void
+    }
+  }
+}
+
 // 全局消息方法
 window.$message = {
   success: (text: string, options?: Partial<MessageItem>) => {
@@ -105,6 +120,12 @@ window.$message = {
   error: (text: string, options?: Partial<MessageItem>) => {
     return addMessage({ type: 'error', text, ...options })
   },
+  close: (id?: number) => {
+    if (id !== undefined) {
+      removeMessage(id)
+    }
+  },
+  closeAll: clearMessages,
   clear: clearMessages
 }
 

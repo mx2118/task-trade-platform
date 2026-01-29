@@ -111,7 +111,7 @@ export const generateUUID = (): string => {
 }
 
 // 设备指纹生成
-export const generateDeviceFingerprint = async (): Promise<string> {
+export const generateDeviceFingerprint = async (): Promise<string> => {
   const data = {
     userAgent: navigator.userAgent,
     language: navigator.language,

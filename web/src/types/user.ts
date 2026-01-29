@@ -13,6 +13,8 @@ export interface UserInfo {
   creditScore?: number
   balance?: number
   isVerified?: boolean
+  wechat_verified?: boolean
+  alipay_verified?: boolean
   realName?: string
   idCard?: string
   alipayAccount?: string
@@ -69,6 +71,26 @@ export interface UserBalance {
   availableBalance: number
   frozenBalance: number
 }
+
+export interface Wallet {
+  id: number
+  userId: number
+  balance: number
+  frozenAmount: number
+  frozen_amount: number
+  totalIncome: number
+  total_income: number
+  totalExpense: number
+  createdAt: string
+  updatedAt: string
+}
+
+// 从其他模块导入类型
+export { Review } from './review'
+export { Notification } from './notification'
+
+// 导出需要的类型别名
+export { UserTransaction as Transaction, UserInfo as User }
 
 export interface UserTransaction {
   id: number

@@ -99,7 +99,7 @@ CREATE TABLE IF NOT EXISTS tasks (
     INDEX idx_status (status),
     INDEX idx_deadline (deadline),
     INDEX idx_category_id (category_id),
-    INDEX idx_created_at (created_at),
+    INDEX idx_create_time (create_time),
     FOREIGN KEY (publisher_id) REFERENCES users(user_id) ON DELETE CASCADE,
     FOREIGN KEY (taker_id) REFERENCES users(user_id) ON DELETE SET NULL,
     FOREIGN KEY (category_id) REFERENCES task_categories(id) ON DELETE SET NULL

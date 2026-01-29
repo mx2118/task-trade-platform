@@ -4,8 +4,8 @@ import (
 	"crypto/rand"
 	"encoding/hex"
 	"fmt"
+	mrand "math/rand"
 	"net"
-	"net/http"
 	"strconv"
 	"strings"
 	"time"
@@ -31,8 +31,8 @@ func GenerateNonce(length int) string {
 	const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 	b := make([]byte, length)
 	for i := range b {
-		n, _ := rand.Int(rand.Reader, rand.NewSource(time.Now().Unix()).Int63())
-		b[i] = charset[n%int64(len(charset))]
+		n := mrand.Intn(len(charset))
+		b[i] = charset[n]
 	}
 	return string(b)
 }

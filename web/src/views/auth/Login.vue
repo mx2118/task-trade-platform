@@ -3,7 +3,7 @@
     <div class="login-card">
       <div class="login-header">
         <div class="logo">
-          <img src="@/assets/logo.png" alt="Task Platform" />
+          <div class="logo-icon">🚀</div>
         </div>
         <h2>任务交易平台</h2>
         <p>安全便捷的任务交易服务</p>
@@ -347,10 +347,17 @@ onMounted(async () => {
       .logo {
         margin-bottom: 20px;
 
-        img {
+        .logo-icon {
           width: 80px;
           height: 80px;
-          border-radius: 12px;
+          margin: 0 auto;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 48px;
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          border-radius: 20px;
+          box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
         }
       }
 

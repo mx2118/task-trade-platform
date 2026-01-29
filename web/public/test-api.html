@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        h1 { color: #333; }
+        .status { 
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .task-card {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            background: #fafafa;
+        }
+        .task-title { 
+            font-size: 18px;
+            font-weight: bold;
+            color: #409eff;
+            margin-bottom: 10px;
+        }
+        .task-info {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+        .info-item {
+            background: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        pre {
+            background: #f4f4f4;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 任务交易平台 - API测试</h1>
+        <div id="status"></div>
+        <div id="tasks"></div>
+        <h2>原始数据</h2>
+        <pre id="raw-data"></pre>
+    </div>
+
+    <script>
+        async function testAPI() {
+            const statusDiv = document.getElementById('status');
+            const tasksDiv = document.getElementById('tasks');
+            const rawDataDiv = document.getElementById('raw-data');
+            
+            try {
+                statusDiv.innerHTML = '<div class="status">正在请求 /api/tasks...</div>';
+                
+                const response = await fetch('/api/tasks');
+                const data = await response.json();
+                
+                // 显示状态
+                if (response.ok && data.code === 200) {
+                    statusDiv.innerHTML = `
+                        <div class="status success">
+                            ✅ API请求成功！<br>
+                            状态码: ${response.status}<br>
+                            返回消息: ${data.message}<br>
+                            任务数量: ${data.data.tasks.length}
+                        </div>
+                    `;
+                    
+                    // 显示任务列表
+                    tasksDiv.innerHTML = '<h2>📋 任务列表</h2>';
+                    data.data.tasks.forEach((task, index) => {
+                        const taskCard = document.createElement('div');
+                        taskCard.className = 'task-card';
+                        taskCard.innerHTML = `
+                            <div class="task-title">${index + 1}. ${task.title}</div>
+                            <div>${task.content.substring(0, 100)}...</div>
+                            <div class="task-info">
+                                <span class="info-item">💰 ¥${task.amount}</span>
+                                <span class="info-item">📁 ${task.category_name}</span>
+                                <span class="info-item">👤 ${task.publisher_name}</span>
+                                <span class="info-item">👁 ${task.view_count} 浏览</span>
+                                <span class="info-item">📝 ${task.apply_count} 申请</span>
+                                <span class="info-item">🕐 ${task.create_time}</span>
+                            </div>
+                        `;
+                        tasksDiv.appendChild(taskCard);
+                    });
+                    
+                } else {
+                    statusDiv.innerHTML = `
+                        <div class="status error">
+                            ❌ API请求失败<br>
+                            状态码: ${response.status}<br>
+                            错误: ${data.message || '未知错误'}
+                        </div>
+                    `;
+                }
+                
+                // 显示原始数据
+                rawDataDiv.textContent = JSON.stringify(data, null, 2);
+                
+            } catch (error) {
+                statusDiv.innerHTML = `
+                    <div class="status error">
+                        ❌ 请求失败: ${error.message}
+                    </div>
+                `;
+                rawDataDiv.textContent = error.stack;
+            }
+        }
+        
+        // 页面加载时执行测试
+        window.onload = testAPI;
+    </script>
+</body>
+</html>

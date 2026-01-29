@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import { login, logout, getUserInfo } from '@/api/auth'
+import { login, logout, getCurrentUser as getUserInfo } from '@/api/modules/auth'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import type { LoginParams, UserInfo } from '@/types/user'
 import { ElMessage } from 'element-plus'
@@ -212,6 +212,7 @@ export const useUserStore = defineStore('user', () => {
     userInfo,
     permissions,
     roles,
+    id: userId,
     
     // 计算属性
     isLoggedIn,
@@ -221,6 +222,11 @@ export const useUserStore = defineStore('user', () => {
     avatar,
     email,
     phone,
+    
+    // Actions (别名兼容)
+    login: loginAction,
+    logout: logoutAction,
+    getUserInfo: getUserInfoAction,
     
     // Actions
     loginAction,

@@ -17,13 +17,20 @@ export interface Task {
   attachments?: TaskAttachment[]
   publisherId: number
   publisher: TaskUser
+  publisher_avatar?: string
+  publisher_name?: string
   takerId?: number
   taker?: TaskUser
   status: TaskStatus
   priority: 'low' | 'normal' | 'high' | 'urgent'
+  is_urgent: boolean
+  is_remote: boolean
   viewCount: number
+  view_count: number
   applyCount: number
   maxApplicants?: number
+  amount: number
+  price: number
   stages?: TaskStage[]
   delivery?: TaskDelivery
   settlement?: TaskSettlement
@@ -344,4 +351,23 @@ export interface TaskLog {
   newStatus?: string
   metadata?: Record<string, any>
   createdAt: string
+}
+
+// 任务申请
+export interface TaskApplication {
+  id: number
+  taskId: number
+  applicantId: number
+  applicant: TaskUser
+  proposal: string
+  attachments: TaskAttachment[]
+  estimatedTime?: number
+  bidAmount?: number
+  message?: string
+  status: 'pending' | 'accepted' | 'rejected'
+  reviewedAt?: string
+  reviewComment?: string
+  reviewedBy?: number
+  createdAt: string
+  updatedAt: string
 }
