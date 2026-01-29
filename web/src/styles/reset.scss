@@ -1,0 +1,202 @@
+// 重置样式
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-text-size-adjust: 100%;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 
+               'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: $font-size-base;
+  color: $text-primary;
+  background-color: $bg-page;
+  line-height: 1.5;
+  overflow-x: hidden;
+}
+
+// 链接样式
+a {
+  color: $primary-color;
+  text-decoration: none;
+  cursor: pointer;
+  transition: color 0.3s;
+
+  &:hover {
+    color: lighten($primary-color, 10%);
+  }
+
+  &:active {
+    color: darken($primary-color, 10%);
+  }
+}
+
+// 按钮重置
+button {
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  border: none;
+  background: none;
+  cursor: pointer;
+  outline: none;
+}
+
+// 输入框重置
+input,
+textarea,
+select {
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  border: 1px solid $border-base;
+  border-radius: $border-radius-base;
+  outline: none;
+  transition: border-color 0.3s, box-shadow 0.3s;
+
+  &:focus {
+    border-color: $primary-color;
+    box-shadow: 0 0 0 2px rgba(64, 158, 255, 0.2);
+  }
+}
+
+// 图片样式
+img {
+  max-width: 100%;
+  height: auto;
+  vertical-align: middle;
+}
+
+// 列表样式
+ul,
+ol {
+  list-style: none;
+}
+
+// 表格样式
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+// 标题样式
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: $font-weight-primary;
+  line-height: 1.2;
+  margin-bottom: $spacing-sm;
+}
+
+h1 { font-size: $font-size-extra-large; }
+h2 { font-size: $font-size-large; }
+h3 { font-size: $font-size-medium; }
+h4 { font-size: $font-size-base; }
+h5 { font-size: $font-size-small; }
+h6 { font-size: $font-size-extra-small; }
+
+// 段落样式
+p {
+  margin-bottom: $spacing-sm;
+  line-height: 1.6;
+}
+
+// 滚动条样式
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: $bg-page;
+  border-radius: $border-radius-small;
+}
+
+::-webkit-scrollbar-thumb {
+  background: $border-lighter;
+  border-radius: $border-radius-small;
+  transition: background 0.3s;
+
+  &:hover {
+    background: $border-light;
+  }
+}
+
+// 选择文本样式
+::selection {
+  background-color: rgba($primary-color, 0.2);
+  color: $text-primary;
+}
+
+::-moz-selection {
+  background-color: rgba($primary-color, 0.2);
+  color: $text-primary;
+}
+
+// 焦点样式
+:focus-visible {
+  outline: 2px solid $primary-color;
+  outline-offset: 2px;
+}
+
+// 禁用状态
+[disabled] {
+  cursor: not-allowed;
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+// 隐藏元素
+.sr-only,
+.visually-hidden {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+// 文本省略
+.text-ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.text-ellipsis-2 {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+.text-ellipsis-3 {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+}
+
+// 清除浮动
+.clearfix::after {
+  content: '';
+  display: table;
+  clear: both;
+}

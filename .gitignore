@@ -1,0 +1,68 @@
+# 环境变量文件
+.env
+.env.local
+.env.production
+.env.development
+
+# 日志文件
+logs/
+*.log
+
+# 上传文件目录
+uploads/
+
+# 临时文件
+tmp/
+temp/
+*.tmp
+
+# 编译输出
+dist/
+build/
+
+# 依赖缓存
+node_modules/
+vendor/
+
+# IDE配置
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# 操作系统文件
+.DS_Store
+Thumbs.db
+
+# 测试覆盖率报告
+coverage/
+*.cover
+
+# 备份文件
+backups/
+*.bak
+*.backup
+
+# SSL证书
+*.crt
+*.key
+*.pem
+ssl/
+
+# 数据库文件
+*.db
+*.sqlite
+*.sqlite3
+
+# 编译器生成的文件
+*.exe
+*.dll
+*.so
+*.dylib
+
+# 配置文件（包含敏感信息）
+configs/config.yaml
+configs/app.yaml
+configs/mysql.prod.cnf
+configs/redis.prod.conf

@@ -1,0 +1,374 @@
+// Element Plus 样式覆盖
+
+// 全局变量覆盖
+:root {
+  --el-color-primary: #{$primary-color};
+  --el-color-success: #{$success-color};
+  --el-color-warning: #{$warning-color};
+  --el-color-danger: #{$danger-color};
+  --el-color-info: #{$info-color};
+  
+  --el-border-radius-base: #{$border-radius-base};
+  --el-border-radius-small: #{$border-radius-small};
+  --el-border-radius-round: #{$border-radius-round};
+  
+  --el-box-shadow-base: #{$box-shadow-base};
+  --el-box-shadow-light: #{$box-shadow-light};
+  --el-box-shadow-dark: #{$box-shadow-dark};
+  
+  --el-font-size-extra-large: #{$font-size-extra-large};
+  --el-font-size-large: #{$font-size-large};
+  --el-font-size-medium: #{$font-size-medium};
+  --el-font-size-base: #{$font-size-base};
+  --el-font-size-small: #{$font-size-small};
+  --el-font-size-extra-small: #{$font-size-extra-small};
+}
+
+// 按钮样式优化
+.el-button {
+  font-weight: $font-weight-secondary;
+  
+  &--primary {
+    background: linear-gradient(135deg, $primary-color 0%, lighten($primary-color, 10%) 100%);
+    border: none;
+    
+    &:hover {
+      background: linear-gradient(135deg, lighten($primary-color, 5%) 0%, lighten($primary-color, 15%) 100%);
+    }
+    
+    &:active {
+      background: linear-gradient(135deg, darken($primary-color, 5%) 0%, $primary-color 100%);
+    }
+  }
+  
+  &--success {
+    background: linear-gradient(135deg, $success-color 0%, lighten($success-color, 10%) 100%);
+    border: none;
+  }
+  
+  &--warning {
+    background: linear-gradient(135deg, $warning-color 0%, lighten($warning-color, 10%) 100%);
+    border: none;
+  }
+  
+  &--danger {
+    background: linear-gradient(135deg, $danger-color 0%, lighten($danger-color, 10%) 100%);
+    border: none;
+  }
+}
+
+// 输入框样式优化
+.el-input {
+  .el-input__wrapper {
+    border-radius: $border-radius-base;
+    transition: all 0.3s;
+    
+    &:hover {
+      border-color: lighten($primary-color, 20%);
+    }
+    
+    &.is-focus {
+      border-color: $primary-color;
+      box-shadow: 0 0 0 2px rgba($primary-color, 0.2);
+    }
+  }
+}
+
+.el-textarea {
+  .el-textarea__inner {
+    border-radius: $border-radius-base;
+    transition: all 0.3s;
+    
+    &:hover {
+      border-color: lighten($primary-color, 20%);
+    }
+    
+    &:focus {
+      border-color: $primary-color;
+      box-shadow: 0 0 0 2px rgba($primary-color, 0.2);
+    }
+  }
+}
+
+// 卡片样式优化
+.el-card {
+  border-radius: $border-radius-base;
+  box-shadow: $box-shadow-base;
+  transition: all 0.3s;
+  
+  &:hover {
+    box-shadow: $box-shadow-light;
+    transform: translateY(-2px);
+  }
+  
+  .el-card__header {
+    border-bottom: 1px solid $border-lighter;
+    background-color: rgba($primary-color, 0.02);
+  }
+}
+
+// 表格样式优化
+.el-table {
+  .el-table__header {
+    th {
+      background-color: rgba($primary-color, 0.05);
+      color: $text-primary;
+      font-weight: $font-weight-primary;
+    }
+  }
+  
+  .el-table__row {
+    &:hover {
+      background-color: rgba($primary-color, 0.03);
+    }
+  }
+}
+
+// 分页样式优化
+.el-pagination {
+  .el-pager li {
+    border-radius: $border-radius-base;
+    
+    &.is-active {
+      background: linear-gradient(135deg, $primary-color 0%, lighten($primary-color, 10%) 100%);
+      color: white;
+    }
+  }
+  
+  .btn-prev,
+  .btn-next {
+    border-radius: $border-radius-base;
+  }
+}
+
+// 菜单样式优化
+.el-menu {
+  border-right: none;
+  
+  .el-menu-item {
+    border-radius: $border-radius-base;
+    margin: 2px 8px;
+    
+    &.is-active {
+      background: linear-gradient(135deg, $primary-color 0%, lighten($primary-color, 10%) 100%);
+      color: white;
+    }
+    
+    &:hover {
+      background-color: rgba($primary-color, 0.1);
+    }
+  }
+  
+  .el-sub-menu {
+    .el-sub-menu__title {
+      border-radius: $border-radius-base;
+      margin: 2px 8px;
+      
+      &:hover {
+        background-color: rgba($primary-color, 0.1);
+      }
+    }
+  }
+}
+
+// 对话框样式优化
+.el-dialog {
+  border-radius: $border-radius-large;
+  box-shadow: $box-shadow-dark;
+  
+  .el-dialog__header {
+    background: linear-gradient(135deg, rgba($primary-color, 0.1) 0%, rgba($primary-color, 0.05) 100%);
+    border-bottom: 1px solid $border-lighter;
+    border-radius: $border-radius-large $border-radius-large 0 0;
+  }
+  
+  .el-dialog__footer {
+    background-color: $bg-page;
+    border-top: 1px solid $border-lighter;
+    border-radius: 0 0 $border-radius-large $border-radius-large;
+  }
+}
+
+// 抽屉样式优化
+.el-drawer {
+  .el-drawer__header {
+    background: linear-gradient(135deg, rgba($primary-color, 0.1) 0%, rgba($primary-color, 0.05) 100%);
+    border-bottom: 1px solid $border-lighter;
+  }
+}
+
+// 标签页样式优化
+.el-tabs {
+  .el-tabs__header {
+    margin-bottom: $spacing-lg;
+  }
+  
+  .el-tabs__nav-wrap::after {
+    background-color: $border-lighter;
+  }
+  
+  .el-tabs__item {
+    border-radius: $border-radius-base $border-radius-base 0 0;
+    
+    &.is-active {
+      color: $primary-color;
+      background: linear-gradient(135deg, rgba($primary-color, 0.1) 0%, rgba($primary-color, 0.05) 100%);
+    }
+  }
+}
+
+// 步骤条样式优化
+.el-steps {
+  .el-step {
+    .el-step__head {
+      .el-step__icon {
+        border-color: $border-light;
+        
+        &.is-text {
+          background: linear-gradient(135deg, $primary-color 0%, lighten($primary-color, 10%) 100%);
+          color: white;
+          border-color: $primary-color;
+        }
+      }
+    }
+    
+    &.is-process {
+      .el-step__icon {
+        background: linear-gradient(135deg, $primary-color 0%, lighten($primary-color, 10%) 100%);
+        border-color: $primary-color;
+      }
+    }
+    
+    &.is-finish {
+      .el-step__icon {
+        border-color: $success-color;
+        color: $success-color;
+      }
+    }
+  }
+}
+
+// 消息提示样式优化
+.el-message {
+  border-radius: $border-radius-base;
+  box-shadow: $box-shadow-light;
+  
+  &.el-message--success {
+    background: linear-gradient(135deg, rgba($success-color, 0.1) 0%, rgba($success-color, 0.05) 100%);
+    border-color: $success-color;
+  }
+  
+  &.el-message--warning {
+    background: linear-gradient(135deg, rgba($warning-color, 0.1) 0%, rgba($warning-color, 0.05) 100%);
+    border-color: $warning-color;
+  }
+  
+  &.el-message--error {
+    background: linear-gradient(135deg, rgba($danger-color, 0.1) 0%, rgba($danger-color, 0.05) 100%);
+    border-color: $danger-color;
+  }
+}
+
+// 通知样式优化
+.el-notification {
+  border-radius: $border-radius-base;
+  box-shadow: $box-shadow-dark;
+  
+  .el-notification__title {
+    font-weight: $font-weight-primary;
+  }
+}
+
+// 加载样式优化
+.el-loading-spinner {
+  .circular {
+    stroke: $primary-color;
+  }
+  
+  .el-loading-text {
+    color: $text-primary;
+    font-weight: $font-weight-secondary;
+  }
+}
+
+// 选择器样式优化
+.el-select {
+  .el-select__wrapper {
+    border-radius: $border-radius-base;
+    
+    &:hover {
+      border-color: lighten($primary-color, 20%);
+    }
+    
+    &.is-focus {
+      border-color: $primary-color;
+      box-shadow: 0 0 0 2px rgba($primary-color, 0.2);
+    }
+  }
+}
+
+// 日期选择器样式优化
+.el-date-editor {
+  .el-input__wrapper {
+    border-radius: $border-radius-base;
+    
+    &:hover {
+      border-color: lighten($primary-color, 20%);
+    }
+    
+    &.is-focus {
+      border-color: $primary-color;
+      box-shadow: 0 0 0 2px rgba($primary-color, 0.2);
+    }
+  }
+}
+
+// 开关样式优化
+.el-switch {
+  &.is-checked {
+    .el-switch__core {
+      background-color: $success-color;
+      border-color: $success-color;
+    }
+  }
+}
+
+// 进度条样式优化
+.el-progress {
+  .el-progress-bar__inner {
+    background: linear-gradient(135deg, $primary-color 0%, lighten($primary-color, 10%) 100%);
+  }
+}
+
+// 时间轴样式优化
+.el-timeline {
+  .el-timeline-item {
+    .el-timeline-item__node {
+      background-color: $primary-color;
+      border-color: $primary-color;
+    }
+    
+    &.is-finish {
+      .el-timeline-item__node {
+        background-color: $success-color;
+        border-color: $success-color;
+      }
+    }
+  }
+}
+
+// 树形控件样式优化
+.el-tree {
+  .el-tree-node__content {
+    border-radius: $border-radius-base;
+    
+    &:hover {
+      background-color: rgba($primary-color, 0.05);
+    }
+  }
+  
+  .el-tree-node.is-current > .el-tree-node__content {
+    background: linear-gradient(135deg, rgba($primary-color, 0.1) 0%, rgba($primary-color, 0.05) 100%);
+    color: $primary-color;
+  }
+}

@@ -1,0 +1,232 @@
+// 响应式样式
+
+// 超小屏幕 (手机)
+@media (max-width: #{$breakpoint-xs}) {
+  .container {
+    padding: 0 $spacing-sm;
+  }
+  
+  .hidden-xs {
+    display: none !important;
+  }
+  
+  .visible-xs {
+    display: block !important;
+  }
+  
+  // 标题大小调整
+  h1 { font-size: $font-size-large; }
+  h2 { font-size: $font-size-medium; }
+  h3 { font-size: $font-size-base; }
+  
+  // 间距调整
+  .section {
+    margin-bottom: $spacing-lg;
+  }
+  
+  // 卡片调整
+  .card {
+    border-radius: $border-radius-small;
+    margin: 0 -$spacing-sm;
+    border-radius: 0;
+  }
+  
+  .card-header,
+  .card-body,
+  .card-footer {
+    padding: $spacing-md;
+  }
+  
+  // 表格响应式
+  .el-table {
+    font-size: $font-size-small;
+    
+    .el-table__cell {
+      padding: $spacing-xs $spacing-sm;
+    }
+  }
+  
+  // 对话框响应式
+  .el-dialog {
+    width: 95% !important;
+    margin: 0 auto;
+  }
+  
+  // 表单响应式
+  .el-form-item {
+    margin-bottom: $spacing-md;
+  }
+  
+  .el-form-item__label {
+    font-size: $font-size-small;
+    padding-bottom: $spacing-xs;
+  }
+}
+
+// 小屏幕 (平板)
+@media (min-width: #{$breakpoint-xs + 1px}) and (max-width: #{$breakpoint-sm}) {
+  .hidden-sm {
+    display: none !important;
+  }
+  
+  .visible-sm {
+    display: block !important;
+  }
+  
+  .container {
+    padding: 0 $spacing-md;
+  }
+  
+  // 表格响应式
+  .el-table {
+    .el-table__cell {
+      padding: $spacing-sm;
+    }
+  }
+}
+
+// 中等屏幕 (小桌面)
+@media (min-width: #{$breakpoint-sm + 1px}) and (max-width: #{$breakpoint-md}) {
+  .hidden-md {
+    display: none !important;
+  }
+  
+  .visible-md {
+    display: block !important;
+  }
+}
+
+// 大屏幕 (桌面)
+@media (min-width: #{$breakpoint-md + 1px}) and (max-width: #{$breakpoint-lg}) {
+  .hidden-lg {
+    display: none !important;
+  }
+  
+  .visible-lg {
+    display: block !important;
+  }
+}
+
+// 超大屏幕 (大桌面)
+@media (min-width: #{$breakpoint-lg + 1px}) {
+  .hidden-xl {
+    display: none !important;
+  }
+  
+  .visible-xl {
+    display: block !important;
+  }
+  
+  .container {
+    max-width: 1140px;
+  }
+}
+
+// 横屏适配
+@media (orientation: landscape) and (max-height: 500px) {
+  .el-dialog {
+    margin-top: 0;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+  
+  .el-drawer {
+    .el-drawer__body {
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+  }
+}
+
+// 打印样式
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  
+  body {
+    background: white !important;
+    color: black !important;
+  }
+  
+  .el-card {
+    border: 1px solid #000 !important;
+    box-shadow: none !important;
+  }
+  
+  .el-table {
+    border: 1px solid #000 !important;
+    
+    th,
+    td {
+      border: 1px solid #000 !important;
+    }
+  }
+}
+
+// 高对比度模式
+@media (prefers-contrast: high) {
+  .card {
+    border: 2px solid $text-primary;
+  }
+  
+  .el-button {
+    border-width: 2px;
+  }
+  
+  .el-input__wrapper {
+    border-width: 2px;
+  }
+}
+
+// 减少动画模式
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+// 暗色模式媒体查询
+@media (prefers-color-scheme: dark) {
+  :root:not(.light) {
+    --el-bg-color: #1a1a1a;
+    --el-bg-color-page: #0a0a0a;
+    --el-text-color-primary: #e5e7eb;
+    --el-border-color: #374151;
+  }
+}
+
+// 移动端特有样式
+@media (hover: none) and (pointer: coarse) {
+  .el-button {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  .el-menu-item {
+    min-height: 48px;
+    padding: 0 16px;
+  }
+  
+  .el-table {
+    .el-table__cell {
+      min-height: 44px;
+    }
+  }
+}
+
+// 触摸设备优化
+@media (pointer: coarse) {
+  .clickable {
+    min-height: 44px;
+    min-width: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}

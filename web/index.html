@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="任务交易平台 - 连接任务发布者和接取者的专业平台" />
+    <meta name="keywords" content="任务平台,兼职,外包,自由职业,任务交易" />
+    <meta name="author" content="任务交易平台团队" />
+    
+    <!-- SEO优化 -->
+    <meta property="og:title" content="任务交易平台 - 连接任务发布者和接取者的专业平台" />
+    <meta property="og:description" content="一个安全、高效的任务交易平台，支持多种任务类型，提供完善的支付和信用体系" />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="/logo.svg" />
+    
+    <!-- 移动端优化 -->
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="任务平台" />
+    
+    <!-- PWA支持 -->
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#409eff" />
+    
+    <!-- 预加载关键资源 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    
+    <title>任务交易平台</title>
+    
+    <!-- 防止FOUC (Flash of Unstyled Content) -->
+    <style>
+      /* 基础重置样式 */
+      html, body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        background-color: #f5f7fa;
+        color: #303133;
+        overflow-x: hidden;
+      }
+      
+      /* 加载动画 */
+      #app-loading {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+      }
+      
+      .loading-spinner {
+        width: 40px;
+        height: 40px;
+        border: 4px solid rgba(64, 158, 255, 0.2);
+        border-top: 4px solid #409eff;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+      
+      .loading-text {
+        margin-top: 16px;
+        color: #606266;
+        font-size: 14px;
+      }
+      
+      .loading-logo {
+        width: 60px;
+        height: 60px;
+        margin-bottom: 20px;
+        animation: pulse 2s ease-in-out infinite;
+      }
+      
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+      
+      @keyframes pulse {
+        0%, 100% { transform: scale(1); opacity: 1; }
+        50% { transform: scale(1.05); opacity: 0.8; }
+      }
+      
+      /* 暗色模式检测 */
+      @media (prefers-color-scheme: dark) {
+        #app-loading {
+          background: linear-gradient(135deg, #1a1a1a 0%, #2d3748 100%);
+        }
+        
+        .loading-text {
+          color: #e2e8f0;
+        }
+      }
+      
+      /* 隐藏应用直到加载完成 */
+      #app {
+        display: none;
+      }
+      
+      .loaded #app {
+        display: block;
+      }
+      
+      .loaded #app-loading {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- 应用挂载点 -->
+    <div id="app"></div>
+    
+    <!-- 加载页面 -->
+    <div id="app-loading">
+      <div class="loading-logo">
+        <svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="60" height="60" rx="12" fill="#409eff"/>
+          <path d="M20 30L25 35L40 20" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="loading-spinner"></div>
+      <div class="loading-text">正在加载任务平台...</div>
+    </div>
+    
+    <script>
+      // 检测浏览器兼容性
+      function checkBrowserSupport() {
+        const requiredFeatures = [
+          'Promise',
+          'Map',
+          'Set',
+          'Array.prototype.includes',
+          'Object.assign',
+          'fetch'
+        ];
+        
+        for (const feature of requiredFeatures) {
+          if (typeof window[feature] === 'undefined') {
+            document.getElementById('app-loading').innerHTML = `
+              <div style="text-align: center; max-width: 400px; padding: 20px;">
+                <h2>浏览器版本过低</h2>
+                <p>请升级到最新版本的 Chrome、Firefox、Safari 或 Edge 浏览器以获得最佳体验。</p>
+                <a href="https://browsehappy.com/" style="color: #409eff; text-decoration: none;">
+                  立即升级浏览器
+                </a>
+              </div>
+            `;
+            return false;
+          }
+        }
+        return true;
+      }
+      
+      // 检测网络状态
+      function checkNetworkStatus() {
+        if (!navigator.onLine) {
+          const loadingElement = document.getElementById('app-loading');
+          const textElement = loadingElement.querySelector('.loading-text');
+          if (textElement) {
+            textElement.textContent = '网络连接失败，请检查网络设置...';
+          }
+        }
+      }
+      
+      // 初始化
+      document.addEventListener('DOMContentLoaded', function() {
+        if (checkBrowserSupport()) {
+          checkNetworkStatus();
+          
+          // 监听网络状态变化
+          window.addEventListener('online', checkNetworkStatus);
+          window.addEventListener('offline', checkNetworkStatus);
+          
+          // 设置加载完成的标记
+          window.addEventListener('load', function() {
+            setTimeout(function() {
+              document.body.classList.add('loaded');
+            }, 100);
+          });
+        }
+      });
+      
+      // 错误处理
+      window.addEventListener('error', function(e) {
+        console.error('应用加载错误:', e.error);
+      });
+      
+      // 未处理的Promise拒绝
+      window.addEventListener('unhandledrejection', function(e) {
+        console.error('未处理的Promise拒绝:', e.reason);
+        e.preventDefault();
+      });
+    </script>
+    
+    <!-- 应用脚本 -->
+    <script type="module" src="/src/main.ts"></script>
+    
+    <!-- Service Worker 注册 -->
+    <script>
+      if ('serviceWorker' in navigator && import.meta.env.PROD) {
+        window.addEventListener('load', function() {
+          navigator.serviceWorker.register('/sw.js')
+            .then(function(registration) {
+              console.log('SW registered: ', registration);
+            })
+            .catch(function(registrationError) {
+              console.log('SW registration failed: ', registrationError);
+            });
+        });
+      }
+    </script>
+  </body>
+</html>
